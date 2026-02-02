@@ -1,0 +1,2674 @@
+<!-- -->
+<!--
+This static HTML file is used as the frontend for the Sales Intelligence Hub prototype.
+Originally the prototype was embedded in a Python script; the Python wrappers have been
+removed for use with Nginx/Caddy. Only the HTML below is served.
+-->
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Sales Intelligence Hub — Prototype (Sber-style)</title>
+  <style>
+    :root{
+      --bg:#f6f7f9;
+      --card:#ffffff;
+      --border:rgba(15,23,42,.10);
+      --text:#0f172a;
+      --muted:#64748b;
+      --muted2:#94a3b8;
+      --shadow:0 1px 0 rgba(15,23,42,.02), 0 8px 24px rgba(15,23,42,.06);
+      --radius:18px;
+      --radius2:14px;
+      --primary:#0f172a;
+      --primary2:#111827;
+      --good:#0f766e;
+      --warn:#b45309;
+      --bad:#b91c1c;
+      --chip:#f1f5f9;
+      --focus:0 0 0 4px rgba(15,23,42,.10);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      background:var(--bg);
+      color:var(--text);
+    }
+    a{color:inherit}
+    .container{max-width:1240px;margin:0 auto;padding:22px}
+    .topbar{
+      display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;
+      margin-bottom:18px;
+    }
+    .brand{
+      display:flex;gap:12px;align-items:flex-start;min-width:320px;
+    }
+    .logo{
+      width:52px;height:52px;border-radius:18px;background:var(--card);
+      border:1px solid var(--border);box-shadow:var(--shadow);
+      display:grid;place-items:center;
+      user-select:none;
+    }
+    .logo span{font-weight:700}
+    .titleblock small{display:block;color:var(--muted);font-size:12px;margin-bottom:4px}
+    .titleblock h1{margin:0;font-size:22px;letter-spacing:-.02em}
+    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+    .chip{
+      display:inline-flex;align-items:center;gap:7px;
+      padding:6px 10px;border-radius:999px;border:1px solid var(--border);
+      background:var(--card);color:var(--muted);font-size:12px;
+    }
+    .chip strong{color:var(--text);font-weight:600}
+    .toolbar{
+      display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+    }
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+    .pill{
+      border-radius:999px;border:1px solid var(--border);background:var(--chip);
+      padding:6px 10px;font-size:12px;color:var(--muted);
+      display:inline-flex;align-items:center;gap:8px;
+    }
+    .select, .input, .btn{
+      border-radius:14px;border:1px solid var(--border);
+      background:var(--card);
+      height:40px;
+      padding:0 12px;
+      font-size:13px;
+      color:var(--text);
+      outline:none;
+    }
+    .input{width:100%}
+    .select{padding-right:34px}
+    .input:focus,.select:focus,.btn:focus{box-shadow:var(--focus)}
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;gap:8px;
+      cursor:pointer;
+      font-weight:600;
+      background:var(--primary);
+      color:white;
+      border:1px solid rgba(15,23,42,.16);
+    }
+    .btn.secondary{background:var(--card);color:var(--text)}
+    .btn.ghost{background:transparent}
+    .btn.small{height:34px;border-radius:12px;font-size:12px;padding:0 10px}
+    .btn:active{transform:translateY(1px)}
+    .grid{
+      display:grid;
+      grid-template-columns: 360px 1fr;
+      gap:16px;
+    }
+    @media (max-width: 1100px){
+      .grid{grid-template-columns:1fr}
+    }
+    .panel{display:grid;gap:16px}
+    .cardhead{
+      padding:16px 16px 0 16px;
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+    }
+    .cardhead h2{
+      margin:0;font-size:14px;letter-spacing:-.01em;
+      display:flex;align-items:center;gap:10px;
+    }
+    .subhead{padding:4px 16px 0 16px;color:var(--muted);font-size:12px}
+    .cardbody{padding:14px 16px 16px 16px}
+    .muted{color:var(--muted)}
+    .muted2{color:var(--muted2)}
+    .kpi{
+      display:grid;gap:12px;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+    }
+    @media (max-width: 880px){
+      .kpi{grid-template-columns:1fr}
+    }
+    .kpi .tile{
+      border-radius:16px;border:1px solid var(--border);background:var(--card);
+      padding:14px;
+    }
+    .kpi .label{font-size:12px;color:var(--muted)}
+    .kpi .value{font-size:28px;font-weight:700;letter-spacing:-.03em;margin-top:6px}
+    .kpi .hint{font-size:12px;color:var(--muted);margin-top:2px}
+    .bar{height:8px;border-radius:999px;background:#edf2f7;overflow:hidden;margin-top:10px}
+    .bar > div{height:8px;background:var(--primary);border-radius:999px;width:0%}
+    .tabs{
+      display:flex;flex-wrap:wrap;gap:8px;
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:6px;
+    }
+    .tab{
+      border:none;background:transparent;
+      padding:10px 12px;border-radius:14px;
+      font-weight:700;color:var(--muted);
+      cursor:pointer;font-size:13px;
+    }
+    .tab.active{background:var(--primary);color:white}
+    .tab:focus{outline:none;box-shadow:var(--focus)}
+    .split{
+      display:grid;gap:14px;
+      grid-template-columns: 1fr 360px;
+      align-items:start;
+    }
+    @media (max-width: 1100px){
+      .split{grid-template-columns:1fr}
+    }
+    .box{
+      border-radius:16px;border:1px solid var(--border);background:var(--card);
+      padding:14px;
+    }
+    .list{display:grid;gap:10px}
+    .li{
+      border-radius:14px;border:1px solid var(--border);background:var(--card);
+      padding:12px;cursor:pointer;
+      transition:background .12s ease;
+    }
+    .li:hover{background:#f8fafc}
+    .li .top{display:flex;justify-content:space-between;gap:10px}
+    .li .t{font-weight:700;font-size:13px}
+    .li .meta{font-size:12px;color:var(--muted)}
+    .li .desc{margin-top:8px;font-size:13px;color:#334155;line-height:1.35}
+    .badge{
+      display:inline-flex;align-items:center;gap:6px;
+      border-radius:999px;padding:5px 9px;font-size:12px;border:1px solid var(--border);
+      color:var(--muted);background:var(--card);
+      white-space:nowrap;
+    }
+    .badge.fill{background:var(--chip)}
+    .badge.good{background:rgba(15,118,110,.12);color:var(--good);border-color:rgba(15,118,110,.18)}
+    .badge.warn{background:rgba(180,83,9,.12);color:var(--warn);border-color:rgba(180,83,9,.18)}
+    .badge.bad{background:rgba(185,28,28,.12);color:var(--bad);border-color:rgba(185,28,28,.18)}
+    .divider{height:1px;background:rgba(15,23,42,.08);margin:12px 0}
+    .two{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+    @media (max-width: 720px){.two{grid-template-columns:1fr}}
+    .miniTitle{font-size:12px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+    .bullets{margin:10px 0 0 0;padding-left:18px;color:#334155}
+    .bullets li{margin:6px 0}
+    .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .table{
+      width:100%;border-collapse:separate;border-spacing:0;
+      overflow:hidden;border-radius:14px;border:1px solid var(--border);
+    }
+    .table th,.table td{padding:10px 12px;font-size:13px;border-bottom:1px solid rgba(15,23,42,.08);vertical-align:top}
+    .table th{color:var(--muted);font-size:12px;text-align:left;background:#fbfcfe}
+    .table tr:last-child td{border-bottom:none}
+    .rowclick{cursor:pointer}
+    .rowclick:hover td{background:#f8fafc}
+    .modal{
+      position:fixed;inset:0;background:rgba(2,6,23,.45);
+      display:none;align-items:center;justify-content:center;
+      padding:18px;
+    }
+    .modal.open{display:flex}
+    .modal .panel{
+      width:min(760px, 100%);
+      background:var(--card);border-radius:22px;border:1px solid rgba(255,255,255,.12);
+      box-shadow:0 24px 60px rgba(2,6,23,.30);
+      overflow:hidden;
+    }
+    .modal .mhead{padding:16px 18px;border-bottom:1px solid rgba(15,23,42,.08)}
+    .modal .mhead h3{margin:0;font-size:15px}
+    .modal .mbody{padding:14px 18px}
+    .modal .mfoot{padding:14px 18px;border-top:1px solid rgba(15,23,42,.08);display:flex;justify-content:flex-end;gap:10px}
+    .kbd{
+      font-family:var(--mono);font-size:12px;border:1px solid rgba(15,23,42,.14);
+      padding:3px 6px;border-radius:9px;background:#fbfcfe;color:#334155;
+    }
+    .notearea{display:grid;gap:8px}
+    .textarea{
+      width:100%;min-height:90px;resize:vertical;
+      border-radius:14px;border:1px solid var(--border);
+      padding:10px 12px;font-size:13px;font-family:var(--sans);
+      outline:none;
+    }
+    .textarea:focus{box-shadow:var(--focus)}
+    .hintBox{
+      border-radius:16px;border:1px dashed rgba(15,23,42,.18);
+      background:#fbfcfe;padding:12px;color:var(--muted);font-size:12px;line-height:1.45;
+    }
+  
+    /* ---- vNext additions (Decision Path / Economics / Win Plan / AI Brief / Competitors / Loss / Account / Red Flags) ---- */
+    .flowWrap{display:flex;flex-wrap:wrap;gap:8px}
+    .flowNode{
+      border-radius:999px;border:1px dashed rgba(15,23,42,.18);
+      padding:7px 10px;background:#fbfcfe;font-size:12px;color:#334155;
+      display:inline-flex;align-items:center;gap:8px
+    }
+    .dot{width:8px;height:8px;border-radius:99px;background:#cbd5e1;display:inline-block}
+    .dot.good{background:rgba(15,118,110,.9)}
+    .dot.warn{background:rgba(180,83,9,.9)}
+    .dot.bad{background:rgba(185,28,28,.9)}
+    .scorebox{
+      border-radius:16px;border:1px solid var(--border);background:var(--card);padding:14px
+    }
+    .scorebox .big{font-size:22px;font-weight:900;letter-spacing:-.02em}
+    .scoregrid{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+    @media (max-width: 720px){.scoregrid{grid-template-columns:1fr}}
+    .miniTable{width:100%;border-collapse:separate;border-spacing:0;overflow:hidden;border-radius:14px;border:1px solid var(--border)}
+    .miniTable td,.miniTable th{padding:10px 12px;font-size:13px;border-bottom:1px solid rgba(15,23,42,.08)}
+    .miniTable th{color:var(--muted);font-size:12px;text-align:left;background:#fbfcfe}
+    .miniTable tr:last-child td{border-bottom:none}
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo" title="Sales Intelligence Hub"><span>SI</span></div>
+        <div class="titleblock">
+          <small>Sales Intelligence Hub</small>
+          <h1 id="companyName">ООО «Промресурс»</h1>
+          <div class="chips">
+            <span class="chip">🏢 <strong>ИНН:</strong> <span id="inn">7700000000</span></span>
+            <span class="chip">🏷️ <strong>Отрасль:</strong> <span id="industry">Промышленность</span></span>
+            <span class="chip">✨ <strong>CRM vNext</strong></span>
+            <span class="chip">🛡️ <strong>контроль маржи</strong></span>
+            <span class="chip" id="compChip">🔒 <strong>Compliance:</strong> Strict</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="card" style="padding:10px 12px;border-radius:18px;display:flex;gap:10px;align-items:center;">
+          <span class="muted" style="font-size:12px;font-weight:700">Роль</span>
+          <select id="role" class="select" style="width:190px">
+            <option value="manager">Менеджер</option>
+            <option value="head">Руководитель</option>
+            <option value="partner">Партнёр</option>
+          </select>
+        </div>
+        <button class="btn" id="btnRefresh">✨ Обновить анализ ИИ</button>
+        <button class="btn secondary" id="btnNextStep">🎯 Следующий шаг</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- LEFT -->
+      <div class="panel">
+        <div class="card">
+          <div class="cardhead">
+            <h2>🧠 Client Profile (ИИ)</h2>
+            <span class="badge fill">structured</span>
+          </div>
+          <div class="subhead">Pain / Need / Objections / Triggers / Landmines — на основе всех сигналов</div>
+          <div class="cardbody">
+            <div class="box">
+              <div class="miniTitle">Боли</div>
+              <ul class="bullets" id="pains"></ul>
+              <div class="divider"></div>
+              <div class="miniTitle">Потребности</div>
+              <ul class="bullets" id="needs"></ul>
+              <div class="divider"></div>
+              <div class="miniTitle">Возражения</div>
+              <ul class="bullets" id="objections"></ul>
+              <div class="divider"></div>
+              <div class="two">
+                <div>
+                  <div class="miniTitle">Триггеры</div>
+                  <ul class="bullets" id="triggers"></ul>
+                </div>
+                <div>
+                  <div class="miniTitle">Мины</div>
+                  <ul class="bullets" id="landmines"></ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="box" style="background:#f8fafc">
+              <div class="miniTitle">Роли из коммуникаций</div>
+              <div id="rolesSeen" style="margin-top:10px;display:flex;flex-wrap:wrap;gap:8px;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="cardhead">
+            <h2>👥 Enrichment (публичные бизнес-данные)</h2>
+            <span class="badge" id="srcBadge">official</span>
+          </div>
+          <div class="subhead">
+            Без «добычи ПД». Источник/ссылка/дата/верификация. Режимы комплаенса ниже.
+          </div>
+          <div class="cardbody">
+            <div class="two">
+              <div>
+                <div class="miniTitle">Переключатель источников</div>
+                <select id="sourceMode" class="select" style="width:100%;margin-top:8px">
+                  <option value="official">Только официальные источники</option>
+                  <option value="plus_profiles">+ публичные профили (нужна верификация)</option>
+                </select>
+              </div>
+              <div>
+                <div class="miniTitle">Супер-комплаенс</div>
+                <label style="margin-top:10px;display:flex;align-items:center;gap:10px;cursor:pointer">
+                  <input type="checkbox" id="noStore" style="width:18px;height:18px"/>
+                  <span style="font-size:13px;color:#334155">
+                    <strong>Не хранить контакты</strong> — только подсказки ролей
+                  </span>
+                </label>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div style="display:flex;gap:10px;align-items:center">
+              <input id="companyInput" class="input" placeholder="Компания" value="ООО «Промресурс»"/>
+              <button class="btn secondary" id="btnEnrich">🔎 Найти</button>
+            </div>
+
+            <div class="divider"></div>
+
+            <table class="table" id="peopleTable">
+              <thead>
+                <tr>
+                  <th>ФИО/Роль</th>
+                  <th>Департамент</th>
+                  <th style="text-align:right">Статус</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+
+            <div style="margin-top:10px" class="hintBox">
+              <div><strong>Важно:</strong> это прототип UI. В production у каждой записи должен быть provenance:
+              источник/URL/дата + статус верификации. Режим <em>No-Store</em> скрывает контакты и отключает сохранение.</div>
+            </div>
+          </div>
+        </div>
+
+        </div>
+
+        <!-- Companies & Clients -->
+        <div class="card">
+          <div class="cardhead">
+            <h2>📇 Companies</h2>
+          </div>
+          <div class="cardbody">
+            <div class="list" id="companyCards"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="cardhead">
+            <h2>👤 Clients</h2>
+          </div>
+          <div class="cardbody">
+            <div class="list" id="clientCards"></div>
+          </div>
+        </div>
+
+        <!-- RIGHT -->
+      <div class="panel">
+        <div class="card">
+          <div class="cardbody" style="padding-top:16px">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+              <div>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div class="logo" style="width:42px;height:42px;border-radius:16px;box-shadow:none"><span>📋</span></div>
+                  <div>
+                    <div style="font-weight:800">Рабочая область сделки</div>
+                    <div class="muted" style="font-size:12px;margin-top:2px">контекст → стратегия → КП</div>
+                  </div>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                <span class="badge fill">stage: discovery</span>
+                <span class="badge">owner: <span id="ownerBadge">Менеджер</span></span>
+              </div>
+            </div>
+
+            <div style="margin-top:14px" class="tabs" id="tabs">
+              <button class="tab active" data-tab="overview">Обзор</button>
+              <button class="tab" data-tab="timeline">Client Timeline</button>
+              <button class="tab" data-tab="relationship">Relationship Map</button>
+
+              <button class="tab" data-tab="decision">Decision Path</button>
+              <button class="tab" data-tab="economics">Deal Economics</button>
+              <button class="tab" data-tab="winplan">Win Plan</button>
+              <button class="tab" data-tab="ai_brief">AI Brief</button>
+              <button class="tab" data-tab="competitors">Конкуренты</button>
+              <button class="tab" data-tab="loss">Loss Intelligence</button>
+              <button class="tab" data-tab="account">Account</button>
+              <button class="tab" data-tab="flags">Red Flags</button>
+
+              <button class="tab" data-tab="media">Медиапарсер</button>
+              <button class="tab" data-tab="tenders">Тендеры</button>
+              <button class="tab" data-tab="meetings">Общение</button>
+              <button class="tab" data-tab="roi">ROI/КП</button>
+            </div>
+
+            <!-- OVERVIEW -->
+            <div class="tabpane" id="pane-overview" style="margin-top:14px">
+              <div class="kpi">
+                <div class="tile">
+                  <div class="label">Общий риск</div>
+                  <div class="value">67 / 100</div>
+                  <div class="hint">Повышенный</div>
+                  <div class="actions">
+                    <button class="btn secondary small" id="btnRiskWhy">🧠 Разбор</button>
+                  </div>
+                </div>
+                <div class="tile">
+                  <div class="label">Потенциал экономии</div>
+                  <div class="value"><span id="economy">≈ 1 200 000 ₽</span></div>
+                  <div class="hint">в год</div>
+                  <div class="actions">
+                    <button class="btn secondary small" id="btnArgs">🎯 Аргументы</button>
+                  </div>
+                </div>
+                <div class="tile">
+                  <div class="label">Вероятность сделки</div>
+                  <div class="value"><span id="prob">72</span>%</div>
+                  <div class="hint">по оценке ИИ (на основе всего контекста)</div>
+                  <div class="bar"><div id="probBar"></div></div>
+                  <div class="actions">
+                    <button class="btn secondary small" id="btnExplainProb">🪄 Объяснить</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="split" style="margin-top:14px">
+                <div class="box">
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+                    <div style="font-weight:800">🕒 Последние события (mini-timeline)</div>
+                    <button class="btn secondary small" id="btnOpenTimeline">Открыть Timeline</button>
+                  </div>
+                  <div class="list" style="margin-top:10px" id="miniTimeline"></div>
+                </div>
+
+                <div class="box">
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+                    <div style="font-weight:800">🎯 Next Best Actions</div>
+                    <span class="badge fill">1.3</span>
+                  </div>
+                  <div class="muted" style="font-size:12px;margin-top:6px">
+                    3 действия: самое вероятное / самое ценное / самое комплаенс-безопасное.
+                  </div>
+                  <div class="divider"></div>
+                  <div class="list" id="nba"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- TIMELINE -->
+            <div class="tabpane" id="pane-timeline" style="display:none;margin-top:14px">
+              <div class="box">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
+                  <div style="font-weight:800">Client Timeline — единая лента событий</div>
+                  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                    <select id="timelineFilter" class="select" style="height:36px">
+                      <option value="all">Все</option>
+                      <option value="media">Медиа</option>
+                      <option value="tender">Тендеры</option>
+                      <option value="note">Заметки</option>
+                      <option value="proposal">КП</option>
+                      <option value="task">Задачи</option>
+                    </select>
+                    <input id="timelineSearch" class="input" style="height:36px;width:220px" placeholder="поиск..."/>
+                    <button class="btn secondary small" id="btnExportTimeline">⬇️ Экспорт</button>
+                  </div>
+                </div>
+                <div class="divider"></div>
+                <div class="list" id="timelineList"></div>
+              </div>
+            </div>
+
+            <!-- RELATIONSHIP -->
+            <div class="tabpane" id="pane-relationship" style="display:none;margin-top:14px">
+              <div class="box">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
+                  <div>
+                    <div style="font-weight:800">Relationship Map</div>
+                    <div class="muted" style="font-size:12px;margin-top:3px">ЛПР / влиятель / блокер + «что важно» + «что говорить»</div>
+                  </div>
+                  <button class="btn secondary small" id="btnRelAuto">🪄 Автозаполнить из контекста</button>
+                </div>
+                <div class="divider"></div>
+
+                <div class="two">
+                  <div class="list" id="relList"></div>
+                  <div class="box" style="background:#fbfcfe" id="relDetails">
+                    <div class="muted">Выбери персону слева, чтобы увидеть детали.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            
+            <!-- DECISION PATH -->
+            <div class="tabpane" id="pane-decision" style="display:none;margin-top:14px">
+              <div class="box">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
+                  <div>
+                    <div style="font-weight:800">🧭 Decision Path — Buying Committee Flow</div>
+                    <div class="muted" style="font-size:12px;margin-top:3px">
+                      Кто инициировал → кто влияет → кто утверждает бюджет → кто может заблокировать → подпись
+                    </div>
+                  </div>
+                  <button class="btn secondary small" id="btnDecisionAuto">🪄 Автозаполнить из контекста</button>
+                </div>
+                <div class="divider"></div>
+
+                <div class="two">
+                  <div class="box" style="background:#fbfcfe">
+                    <div class="miniTitle">Флоу принятия решения</div>
+                    <div class="flowWrap" style="margin-top:10px" id="decisionFlow"></div>
+                    <div class="divider"></div>
+                    <div class="miniTitle">Комментарий</div>
+                    <div class="muted" style="font-size:13px;margin-top:8px" id="decisionHint"></div>
+                  </div>
+
+                  <div class="box" style="background:#ffffff">
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
+                      <div>
+                        <div class="miniTitle">Статусы по шагам</div>
+                        <div class="muted" style="font-size:12px;margin-top:4px">unknown / identified / contacted / aligned / blocked</div>
+                      </div>
+                      <button class="btn secondary small" id="btnDecisionQuestions">🎯 Сгенерировать вопросы</button>
+                    </div>
+                    <div class="divider"></div>
+                    <table class="miniTable" id="decisionTable">
+                      <thead>
+                        <tr>
+                          <th>Шаг</th>
+                          <th>Кто/роль</th>
+                          <th style="text-align:right">Статус</th>
+                        </tr>
+                      </thead>
+                      <tbody></tbody>
+                    </table>
+                    <div class="hintBox" style="margin-top:12px">
+                      Влияние: отсутствие подтверждённого ЛПР/подписанта снижает вероятность; раннее согласование ИБ/юристов повышает.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- DEAL ECONOMICS -->
+            <div class="tabpane" id="pane-economics" style="display:none;margin-top:14px">
+              <div class="box">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
+                  <div>
+                    <div style="font-weight:800">💰 Deal Economics — экономика сделки (со стороны продавца)</div>
+                    <div class="muted" style="font-size:12px;margin-top:3px">
+                      Себестоимость • маржа • риск перерасхода • влияние кастомизаций/интеграций/SLA
+                    </div>
+                  </div>
+                  <button class="btn secondary small" id="btnEconExplain">🧠 Что убивает экономику?</button>
+                </div>
+                <div class="divider"></div>
+
+                <div class="scoregrid">
+                  <div class="scorebox">
+                    <div class="miniTitle">Ключевые цифры</div>
+                    <table class="miniTable" style="margin-top:10px">
+                      <tbody>
+                        <tr><th>Цена сделки</th><td style="text-align:right" id="econPrice">—</td></tr>
+                        <tr><th>Себестоимость</th><td style="text-align:right" id="econCost">—</td></tr>
+                        <tr><th>Маржа</th><td style="text-align:right" id="econMargin">—</td></tr>
+                        <tr><th>Минимум</th><td style="text-align:right" id="econMinMargin">—</td></tr>
+                      </tbody>
+                    </table>
+                    <div class="divider"></div>
+                    <div class="muted2" style="font-size:12px">
+                      * В MVP значения могут быть введены вручную/по шаблону. В дальнейшем — автоматизация из КП/прайса/трудозатрат.
+                    </div>
+                  </div>
+
+                  <div class="scorebox" style="background:#fbfcfe">
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
+                      <div>
+                        <div class="miniTitle">Факторы риска перерасхода</div>
+                        <div class="muted" style="font-size:12px;margin-top:4px">Автоматически подсвечиваются и влияют на вероятность</div>
+                      </div>
+                      <button class="btn secondary small" id="btnEconBoundaries">🛡️ Границы в КП</button>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="list" id="econKillers"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- WIN PLAN -->
+            <div class="tabpane" id="pane-winplan" style="display:none;margin-top:14px">
+              <div class="box">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
+                  <div>
+                    <div style="font-weight:800">🏁 Win Plan — 1 экран «как мы выиграем»</div>
+                    <div class="muted" style="font-size:12px;margin-top:3px">Цель • критерии победы • ключевые риски • план снижения рисков • контрольная дата</div>
+                  </div>
+                  <button class="btn secondary small" id="btnWinPlanAuto">🪄 Автосборка из контекста</button>
+                </div>
+                <div class="divider"></div>
+
+                <div class="two">
+                  <div class="box" style="background:#fbfcfe">
+                    <div class="miniTitle">Win Plan</div>
+                    <div class="divider"></div>
+                    <div class="miniTitle">Цель</div>
+                    <div style="font-weight:800;margin-top:8px;color:#334155" id="wpGoal">—</div>
+                    <div class="divider"></div>
+                    <div class="miniTitle">Критерии победы</div>
+                    <ul class="bullets" id="wpCriteria"></ul>
+                    <div class="divider"></div>
+                    <div class="miniTitle">Дедлайн</div>
+                    <div style="font-weight:800;margin-top:8px;color:#334155" id="wpDeadline">—</div>
+                  </div>
+                  <div class="box">
+                    <div class="miniTitle">Риски и план снижения</div>
+                    <div class="divider"></div>
+                    <div class="list" id="wpRisks"></div>
+                    <div class="actions">
+                      <button class="btn secondary" id="btnWpToTasks">📋 В задачи</button>
+                      <button class="btn secondary" id="btnWpToKP">🧾 В КП</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- AI BRIEF -->
+            <div class="tabpane" id="pane-ai_brief" style="display:none;margin-top:14px">
+              <div class="box">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
+                  <div>
+                    <div style="font-weight:800">🪄 AI Brief — «что сказать завтра»</div>
+                    <div class="muted" style="font-size:12px;margin-top:3px">1‑страничный бриф перед звонком/письмом, на основе всего контекста</div>
+                  </div>
+                  <div style="display:flex;gap:8px;flex-wrap:wrap">
+                    <button class="btn secondary small" id="btnAiBriefGen">✨ Сгенерировать</button>
+                    <button class="btn secondary small" id="btnAiBriefMail">✉️ В письмо</button>
+                    <button class="btn secondary small" id="btnAiBriefCall">📞 В скрипт</button>
+                  </div>
+                </div>
+                <div class="divider"></div>
+                <div class="box" style="background:#fbfcfe" id="aiBriefBox"></div>
+              </div>
+            </div>
+
+            <!-- COMPETITORS -->
+            <div class="tabpane" id="pane-competitors" style="display:none;margin-top:14px">
+              <div class="box">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
+                  <div>
+                    <div style="font-weight:800">🧩 Competitive Intelligence — конкуренты в сделке</div>
+                    <div class="muted" style="font-size:12px;margin-top:3px">Кто в сделке • где сильнее/слабее • как играть против</div>
+                  </div>
+                  <button class="btn secondary small" id="btnCompAdvice">🎯 Стратегия</button>
+                </div>
+                <div class="divider"></div>
+                <div class="two">
+                  <div class="list" id="competitorList"></div>
+                  <div class="box" style="background:#fbfcfe">
+                    <div class="miniTitle">Совет</div>
+                    <div style="margin-top:10px;color:#334155;line-height:1.55" id="competitorAdvice">—</div>
+                    <div class="divider"></div>
+                    <div class="hintBox">Демо: совет формируется из причин проигрыша, экономики и риска тендера/ИБ.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- LOSS INTELLIGENCE -->
+            <div class="tabpane" id="pane-loss" style="display:none;margin-top:14px">
+              <div class="box">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
+                  <div>
+                    <div style="font-weight:800">📉 Loss Intelligence — если проиграем, почему?</div>
+                    <div class="muted" style="font-size:12px;margin-top:3px">Причины проигрыша → обновление playbook / аргументов / риск-модели</div>
+                  </div>
+                  <button class="btn secondary small" id="btnLossApply">🪄 Обновить playbook</button>
+                </div>
+                <div class="divider"></div>
+
+                <table class="miniTable" id="lossTable">
+                  <thead>
+                    <tr>
+                      <th>Причина</th>
+                      <th>Описание</th>
+                      <th style="text-align:right">Риск</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+
+                <div class="actions" style="margin-top:12px">
+                  <button class="btn secondary" id="btnLossToArgs">🎯 В аргументы</button>
+                  <button class="btn secondary" id="btnLossToKP">🧾 В КП</button>
+                  <button class="btn secondary" id="btnLossToFlags">🚩 В красные флаги</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- ACCOUNT -->
+            <div class="tabpane" id="pane-account" style="display:none;margin-top:14px">
+              <div class="box">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
+                  <div>
+                    <div style="font-weight:800">🏢 Account — уровень аккаунта (не одной сделки)</div>
+                    <div class="muted" style="font-size:12px;margin-top:3px">История • что покупали • кто лоялен/кто «обжёгся» • потенциал апсейла</div>
+                  </div>
+                  <button class="btn secondary small" id="btnAccountScoreExplain">🧠 Почему score?</button>
+                </div>
+                <div class="divider"></div>
+
+                <div class="two">
+                  <div class="box" style="background:#fbfcfe">
+                    <div class="miniTitle">Account Health</div>
+                    <div style="display:flex;align-items:baseline;gap:10px;margin-top:10px">
+                      <div class="big" id="accScore">—</div>
+                      <span class="badge fill" id="accLabel">—</span>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="miniTitle">Сигналы</div>
+                    <ul class="bullets" id="accSignals"></ul>
+                  </div>
+
+                  <div class="box">
+                    <div class="miniTitle">История сделок и касаний</div>
+                    <div class="divider"></div>
+                    <div class="list" id="accHistory"></div>
+                    <div class="actions">
+                      <button class="btn secondary" id="btnAccToPlan">🏁 В Win Plan</button>
+                      <button class="btn secondary" id="btnAccToTimeline">🕒 В Timeline</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- RED FLAGS -->
+            <div class="tabpane" id="pane-flags" style="display:none;margin-top:14px">
+              <div class="box">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
+                  <div>
+                    <div style="font-weight:800">🚩 Red Flags — сделка опасна?</div>
+                    <div class="muted" style="font-size:12px;margin-top:3px">Автосписок флагов: нет ЛПР/бюджета/ROI/маржи, рисковый тендер, комплаенс‑ограничения</div>
+                  </div>
+                  <button class="btn secondary small" id="btnFlagsExplain">🧠 Почему флаг?</button>
+                </div>
+                <div class="divider"></div>
+                <div class="list" id="flagsList"></div>
+                <div class="hintBox" style="margin-top:12px">
+                  Флаги напрямую влияют на «Next Best Actions» и приоритизацию действий.
+                </div>
+              </div>
+            </div>
+
+
+            <!-- MEDIA -->
+            <div class="tabpane" id="pane-media" style="display:none;margin-top:14px">
+              <div class="box">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
+                  <div style="font-weight:800">📡 Медиапарсер — сигналы рынка</div>
+                  <button class="btn secondary small" id="btnMediaRefresh">🔎 Обновить</button>
+                </div>
+                <div class="divider"></div>
+                <div class="list" id="mediaList"></div>
+              </div>
+            </div>
+
+            <!-- TENDERS -->
+            <div class="tabpane" id="pane-tenders" style="display:none;margin-top:14px">
+              <div class="box">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
+                  <div style="font-weight:800">⚖️ Тендерный парсер — закупки</div>
+                  <button class="btn secondary small" id="btnTenderRefresh">🔎 Обновить</button>
+                </div>
+                <div class="divider"></div>
+                <div class="list" id="tenderList"></div>
+              </div>
+            </div>
+
+            <!-- MEETINGS -->
+            <div class="tabpane" id="pane-meetings" style="display:none;margin-top:14px">
+              <div class="box">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
+                  <div style="font-weight:800">💬 Разбор общения — заметки/записи</div>
+                  <div class="pill">быстрый ввод • анализ • автозаполнение профиля</div>
+                </div>
+                <div class="divider"></div>
+
+                <div class="notearea">
+                  <div class="miniTitle">Добавить заметку менеджера</div>
+                  <textarea class="textarea" id="noteText" placeholder="Вставь заметку / выдержку / письмо. ИИ выделит боли/возражения/роли/след. шаги."></textarea>
+                  <div style="display:flex;gap:10px;flex-wrap:wrap">
+                    <button class="btn" id="btnAnalyzeNote">🧠 Проанализировать ИИ</button>
+                    <button class="btn secondary" id="btnUpload">⬆️ Загрузить запись (demo)</button>
+                  </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="list" id="notesList"></div>
+              </div>
+            </div>
+
+            <!-- ROI -->
+            <div class="tabpane" id="pane-roi" style="display:none;margin-top:14px">
+              <div class="split">
+                <div class="box">
+                  <div style="font-weight:800">📈 ROI калькулятор</div>
+                  <div class="muted" style="font-size:12px;margin-top:4px">Гибкая метрика: пользователи/конечные точки/серверы/филиалы</div>
+                  <div class="divider"></div>
+
+                  <div class="two">
+                    <div>
+                      <div class="miniTitle">Метрика</div>
+                      <select id="metric" class="select" style="width:100%;margin-top:8px">
+                        <option value="endpoints">Конечные точки</option>
+                        <option value="users">Пользователи</option>
+                        <option value="servers">Серверы</option>
+                        <option value="sites">Филиалы</option>
+                      </select>
+                    </div>
+                    <div>
+                      <div class="miniTitle">Значение</div>
+                      <input id="metricValue" class="input" style="margin-top:8px" type="number" value="10000"/>
+                    </div>
+                    <div>
+                      <div class="miniTitle">Текущие затраты (₽/год)</div>
+                      <input id="costBefore" class="input" style="margin-top:8px" type="number" value="3000000"/>
+                    </div>
+                    <div>
+                      <div class="miniTitle">После внедрения (₽/год)</div>
+                      <input id="costAfter" class="input" style="margin-top:8px" type="number" value="1800000"/>
+                    </div>
+                  </div>
+
+                  <div class="divider"></div>
+
+                  <div class="two">
+                    <div class="box" style="background:white">
+                      <div class="miniTitle">Экономия</div>
+                      <div style="font-size:20px;font-weight:800;margin-top:6px;color:var(--good)" id="roiEconomy">—</div>
+                      <div class="muted" style="font-size:12px;margin-top:2px">в год</div>
+                    </div>
+                    <div class="box" style="background:white">
+                      <div class="miniTitle">ROI</div>
+                      <div style="font-size:20px;font-weight:800;margin-top:6px" id="roiVal">—</div>
+                      <div class="muted" style="font-size:12px;margin-top:2px">оценочно</div>
+                    </div>
+                  </div>
+
+                  <div class="actions">
+                    <button class="btn secondary" id="btnRoiOnepager">⬇️ ROI-onepager (demo)</button>
+                    <button class="btn secondary" id="btnSaveTemplate">🪄 Сохранить шаблон</button>
+                  </div>
+
+                  <div class="divider"></div>
+                  <div class="hintBox">
+                    Важный эффект: изменение ROI мгновенно влияет на <strong>Вероятность сделки</strong> в Обзоре
+                    (это часть 2.1 — % считается «на основе всего»).
+                  </div>
+                </div>
+
+                <div class="box">
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
+                    <div>
+                      <div style="font-weight:800">🧾 КП (story + спецификация)</div>
+                      <div class="muted" style="font-size:12px;margin-top:3px">две версии: C-level / IT-план</div>
+                    </div>
+                    <select id="kpMode" class="select" style="height:36px">
+                      <option value="c_level">C-level</option>
+                      <option value="it">IT/ИБ</option>
+                      <option value="partner">Партнёр</option>
+                    </select>
+                  </div>
+                  <div class="divider"></div>
+
+                  <div class="box" style="background:#fbfcfe" id="kpStory"></div>
+
+                  <div class="divider"></div>
+
+                  <div class="box" style="background:#f8fafc">
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+                      <div class="miniTitle">Контроль скидок</div>
+                      <span class="badge" id="discountBadge">view only</span>
+                    </div>
+                    <div class="muted" style="font-size:12px;margin-top:8px" id="discountText"></div>
+                  </div>
+
+                  <div class="actions">
+                    <button class="btn" id="btnGenKP">✨ Сформировать КП с учётом контекста</button>
+                    <button class="btn secondary" id="btnExportKP">⬇️ Экспорт (demo)</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- cardbody -->
+        </div><!-- card -->
+      </div><!-- panel -->
+    </div><!-- grid -->
+  </div><!-- container -->
+
+  <!-- MODAL -->
+  <div class="modal" id="modal">
+    <div class="panel">
+      <div class="mhead">
+        <h3 id="mTitle">Заголовок</h3>
+        <div class="muted" id="mSub" style="font-size:12px;margin-top:6px"></div>
+      </div>
+      <div class="mbody" id="mBody"></div>
+      <div class="mfoot">
+        <button class="btn secondary" id="mClose">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+/** ------------------------------
+ *  DATA (mock)
+ *  ------------------------------ */
+
+const state = {
+  role: 'manager',
+  sourceMode: 'official',     // 'official' | 'plus_profiles'
+  noStore: false,             // 3.2
+  company: 'ООО «Промресурс»',
+  inn: '7700000000',
+  industry: 'Промышленность',
+
+  roi: {
+    metric: 'endpoints',
+    metricValue: 10000,
+    costBefore: 3000000,
+    costAfter: 1800000,
+  },
+
+  people: [
+    { name:'Кузнецов Илья Сергеевич', title:'ИТ-директор', dept:'IT',
+      email:'it.office@company.ru', phone:'+7 (495) 000-00-00',
+      source:'Официальный сайт (контакты)', url:'https://example.com/contacts',
+      origin:'official', verified:true, updated:'02.02.2026' },
+    { name:'Отдел закупок', title:'Контакт для поставщиков', dept:'Procurement',
+      email:'tenders@company.ru',
+      source:'Публичные документы закупок', url:'https://example.com/tenders',
+      origin:'official', verified:true, updated:'01.02.2026' },
+    { name:'Соколова Марина Андреевна', title:'Финансовый директор', dept:'Finance',
+      source:'Публичный профиль (нужна верификация)', url:'https://example.com/profile',
+      origin:'profile', verified:false, updated:'02.02.2026' },
+  ],
+
+  media: [
+    { title:'Программа оптимизации ИТ-бюджета на 2026', summary:'Фокус на снижение TCO и управляемость ИТ-активов.',
+      tag:'budget', date:'Янв 2026', source:'Пресс-релиз', link:'https://example.com/pr' },
+    { title:'Импортозамещение корпоративного ПО', summary:'План перехода на отечественные решения в 2 этапа.',
+      tag:'import', date:'Дек 2025', source:'Новости компании', link:'https://example.com/news' },
+    { title:'Рост штата ИТ', summary:'Открыты вакансии: SAM/Asset manager, ITSM analyst.',
+      tag:'growth', date:'Фев 2026', source:'Вакансии', link:'https://example.com/jobs' },
+  ],
+
+  tenders: [
+    { title:'223-ФЗ: инвентаризация ИТ-активов и SAM', law:'223-ФЗ', deadline:'100 раб. дней после ЧТЗ',
+      budget:'жёсткий лимит',
+      reqs:['учёт лицензий','интеграции (неполный список)','отчётность'],
+      risk:'high',
+      note:'Риск: нераскрытые интеграции → рост объёма. Нужны границы ответственности в КП.',
+      link:'https://example.com/tender/223' },
+    { title:'Поддержка ИТ-инфраструктуры (ITSM + CMDB)', law:'Коммерческая закупка', deadline:'Q2 2026',
+      budget:'в пределах текущего OPEX',
+      reqs:['каталог услуг','инциденты/проблемы','CMDB'],
+      risk:'mid',
+      note:'Выгодно: можно продавать по этапам: Discovery → CMDB → процессы ITSM.',
+      link:'https://example.com/tender/itsm' },
+  ],
+
+  notes: [
+    { when:'01.02.2026 15:00', channel:'call', author:'Менеджер',
+      text:'Клиент жалуется на хаос в учёте ПО и страх проверок. Просили показать экономию и быстрый старт без тяжёлых интеграций.',
+      insights:{
+        pains:['хаос лицензий','страх проверок','нет прозрачности'],
+        needs:['быстрый эффект','минимум интеграций','отчётность'],
+        objections:['нет бюджета на большой проект','опасаются нагрузки на ИТ'],
+        nextMoves:['показать ROI','согласовать пилот 2–4 недели','зафиксировать границы интеграций'],
+        roles:['ЛПР: финдир','блокер: ИБ','пользователь: ИТ'],
+      }
+    },
+    { when:'02.02.2026 11:20', channel:'email', author:'Менеджер',
+      text:'Запросили КП в двух версиях: для финансов (цифры) и для ИТ (план внедрения).',
+      insights:{
+        pains:['нужно защитить бюджет'],
+        needs:['2 версии КП','план внедрения'],
+        objections:['хотят фикс сроки'],
+        nextMoves:['собрать вводные','дать 2 КП: C-level/IT','включить этапность'],
+        roles:['ЛПР: финдир','влиятель: ИТ-директор'],
+      }
+    },
+  ],
+  // --- vNext additions ---
+  decisionPath: [
+    { key:'initiator', label:'Инициатор', who:'Отдел закупок', status:'aligned' },      // aligned/contacted/blocked/unknown/identified
+    { key:'influencer', label:'Влиятель', who:'ИТ-директор', status:'contacted' },
+    { key:'dm', label:'ЛПР', who:'Финдиректор', status:'unknown' },
+    { key:'legal', label:'Юристы/ИБ', who:'Служба ИБ', status:'identified' },
+    { key:'sign', label:'Подпись', who:'Ген. директор', status:'unknown' },
+  ],
+
+  dealEconomics: {
+    price: 6500000,
+    cost: 4400000,
+    minMarginPct: 25,
+    killers: [
+      { title:'Интеграции без ТЗ', why:'Риск перерасхода по времени и ответственности.', impact:-7, level:'bad' },
+      { title:'SLA 24/7', why:'Рост себестоимости поддержки и требований к персоналу.', impact:-5, level:'warn' },
+      { title:'Кастомизация «под закупку»', why:'Разовая разработка может не окупиться.', impact:-6, level:'warn' },
+    ]
+  },
+
+  winPlan: {
+    goal: 'Подписать контракт и запустить пилот до 30.04.2026',
+    deadline: '30.04.2026',
+    criteria: ['ROI ≥ 50% или окупаемость ≤ 12 мес', 'ИБ согласовано (Strict/No‑Store при необходимости)', 'Границы интеграций зафиксированы'],
+    risks: [
+      { title:'Нет подтверждённого ЛПР', plan:'Организовать встречу CFO и согласовать критерии успеха.', impact:8 },
+      { title:'Нераскрытые интеграции', plan:'Этапность + рамки ответственности в КП.', impact:7 },
+      { title:'Комплаенс/ПД', plan:'Режим Strict/No‑Store + provenance + аудит.', impact:5 },
+    ]
+  },
+
+  aiBrief: {
+    forWhom: 'Финдиректор (ЛПР)',
+    important: ['экономия OPEX', 'предсказуемость', 'контроль рисков'],
+    fears: ['провал сроков', 'рост бюджета', 'аудит/проверки'],
+    arguments: ['ROI‑onepager с цифрами', 'этапность (2–4 недели быстрый эффект)', 'границы интеграций и ответственности'],
+    questions: ['Какой порог окупаемости/ROI для утверждения?', 'Кто финально утверждает бюджет и в каком порядке?', 'Какие риски важнее: сроки, ИБ, бюджет?'],
+    taboo: ['глубокая техничка', 'обещания «интегрируем всё» без рамок']
+  },
+
+  competitorsInDeal: [
+    { name:'Vendor A', strong:['низкая цена'], weak:['слабая доказательная база/аудит'], tip:'Бей по рискам внедрения и проверок.' },
+    { name:'Vendor B', strong:['быстрый старт'], weak:['нет комплаенс‑режимов Strict/No‑Store'], tip:'Подсвети комплаенс и provenance.' },
+  ],
+
+  lossIntel: [
+    { reason:'Цена', desc:'Слишком высокая стоимость относительно текущего бюджета.', risk:'mid' },
+    { reason:'Сроки', desc:'Нереалистичные ожидания по внедрению/интеграциям.', risk:'mid' },
+    { reason:'Комплаенс', desc:'Запрет на хранение/обработку контактов или источники данных.', risk:'high' },
+    { reason:'Политическое решение', desc:'Лобби внутреннего вендора/интегратора.', risk:'mid' },
+  ],
+
+  account: {
+    healthScore: 71,
+    label: 'апселл возможен',
+    signals: ['История: ранее была закупка по ИТ‑активам', 'Фокус на оптимизации бюджета 2026', 'Есть тендерная активность (223‑ФЗ)'],
+    history: [
+      { when:'2024', title:'Win: аудит лицензий', amount:'3,2 млн ₽', note:'Понравилась отчётность и скорость.' },
+      { when:'2025', title:'Loss: CMDB/ITSM', amount:'—', note:'Проиграли по цене и срокам.' },
+    ]
+  },
+
+
+  relationship: [
+    { id:'r1', role:'ЛПР', name:'Соколова М.А.', title:'Финансовый директор', dept:'Finance',
+      influence:5, stance:'unknown',
+      matters:['снижение OPEX','предсказуемость','контроль рисков/штрафов'],
+      fears:['рост бюджета','провал сроков','аудит/проверки'],
+      say:['One-pager с экономикой и окупаемостью','этапность + быстрый эффект','снижение рисков проверок'],
+      avoid:['глубокая техничка','неопределённые сроки','обещания без рамок'],
+      ask:['Какой порог окупаемости?','Как измеряете экономию?','Кто финально утверждает бюджет?'],
+      links:['r2']
+    },
+    { id:'r2', role:'Влиятель', name:'Кузнецов И.С.', title:'ИТ-директор', dept:'IT',
+      influence:4, stance:'neutral',
+      matters:['минимальная нагрузка на ИТ','быстрый старт','архитектура/безопасность'],
+      fears:['интеграции без ТЗ','нагрузка на команду','ИБ-ограничения'],
+      say:['минимальный агентский старт','план внедрения по этапам','фиксируем границы интеграций'],
+      avoid:['«всё интегрируем»','жёсткие обещания по срокам'],
+      ask:['Какие источники данных доступны?','Какие системы критичны?','Есть ли CMDB/ITSM сейчас?'],
+      links:['r3']
+    },
+    { id:'r3', role:'Блокер', name:'Служба ИБ', title:'ИБ', dept:'Security',
+      influence:3, stance:'unknown',
+      matters:['контроль доступа','аудит','политики хранения данных'],
+      fears:['хранение контактов','непонятные источники данных'],
+      say:['ролевой доступ + аудит','режим Strict/No-Store','официальные источники и верификация'],
+      avoid:['сбор ПД','скрытые источники'],
+      ask:['Какие ограничения на хранение/обработку?','Нужны ли согласования ИБ?'],
+      links:[]
+    },
+  ]
+};
+
+const ui = {
+  modal: document.getElementById('modal'),
+  mTitle: document.getElementById('mTitle'),
+  mSub: document.getElementById('mSub'),
+  mBody: document.getElementById('mBody'),
+  mClose: document.getElementById('mClose'),
+};
+
+function openModal(title, subtitle, bodyHtml){
+  ui.mTitle.textContent = title || '';
+  ui.mSub.textContent = subtitle || '';
+  ui.mBody.innerHTML = bodyHtml || '';
+  ui.modal.classList.add('open');
+}
+function closeModal(){ ui.modal.classList.remove('open'); }
+ui.mClose.addEventListener('click', closeModal);
+ui.modal.addEventListener('click', (e)=>{ if(e.target === ui.modal) closeModal(); });
+
+function fmtMoney(n){
+  if(!isFinite(n)) return '—';
+  return n.toLocaleString('ru-RU') + ' ₽';
+}
+function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
+
+/** ------------------------------
+ *  3.1 + 3.2 Compliance
+ *  ------------------------------ */
+function getComplianceMode(){
+  if(state.noStore) return 'No-Store';
+  return state.sourceMode === 'official' ? 'Strict' : 'Standard';
+}
+function updateComplianceChip(){
+  const chip = document.getElementById('compChip');
+  const mode = getComplianceMode();
+  chip.innerHTML = `🔒 <strong>Compliance:</strong> ${mode}`;
+}
+
+/** ------------------------------
+ *  2.2 Client Profile (derived)
+ *  ------------------------------ */
+function deriveClientProfile(){
+  const pains = new Set();
+  const needs = new Set();
+  const objections = new Set();
+  const roles = new Set();
+
+  state.notes.forEach(n=>{
+    n.insights.pains.forEach(x=>pains.add(x));
+    n.insights.needs.forEach(x=>needs.add(x));
+    n.insights.objections.forEach(x=>objections.add(x));
+    n.insights.roles.forEach(x=>roles.add(x));
+  });
+
+  const triggers = [];
+  const landmines = [];
+
+  const tags = state.media.map(m=>m.tag);
+  if(tags.includes('budget')) triggers.push('Есть сигнал оптимизации бюджета');
+  if(tags.includes('import')) triggers.push('Импортозамещение — окно возможностей');
+  if(tags.includes('growth')) triggers.push('Рост ИТ-функции → потребность в управляемости');
+  if(tags.includes('risk')) triggers.push('Рисковая повестка — нужен аккуратный заход');
+
+  const hasHighRiskTender = state.tenders.some(t=>t.risk==='high');
+  if(hasHighRiskTender) landmines.push('Нераскрытые интеграции в тендере');
+  if(objections.size) landmines.push('Цена/сроки — чувствительная тема');
+
+  return {
+    pains:[...pains].slice(0,8),
+    needs:[...needs].slice(0,8),
+    objections:[...objections].slice(0,8),
+    triggers: triggers.length ? triggers : ['Пока нет сильных триггеров'],
+    landmines: landmines.length ? landmines : ['Пока всё чисто'],
+    roles:[...roles].slice(0,8),
+  };
+}
+
+function renderClientProfile(){
+  const p = deriveClientProfile();
+
+  const ul = (id, items)=>{
+    const el = document.getElementById(id);
+    el.innerHTML = items.map(x=>`<li>${escapeHtml(x)}</li>`).join('');
+  };
+  ul('pains', p.pains.length ? p.pains : ['—']);
+  ul('needs', p.needs.length ? p.needs : ['—']);
+  ul('objections', p.objections.length ? p.objections : ['—']);
+  ul('triggers', p.triggers);
+  ul('landmines', p.landmines);
+
+  const rolesWrap = document.getElementById('rolesSeen');
+  rolesWrap.innerHTML = p.roles.length
+    ? p.roles.map(r=>`<span class="badge">${escapeHtml(r)}</span>`).join('')
+    : `<span class="muted">Нет данных</span>`;
+}
+
+/** ------------------------------
+ *  2.3 Timeline (source of truth)
+ *  ------------------------------ */
+function buildTimeline(){
+  const ev = [];
+
+  // media events
+  state.media.forEach((m,idx)=>{
+    const delta = (m.tag==='budget'||m.tag==='import'||m.tag==='growth') ? +4 : (m.tag==='risk' ? -4 : 0);
+    ev.push({
+      id:`m-${idx}`, type:'media', when:m.date,
+      title:m.title, summary:m.summary, source:m.source, link:m.link,
+      evidence:'Публичная публикация',
+      impact:{delta, reason: delta>=0 ? 'Позитивный рыночный сигнал' : 'Негативный/рисковый сигнал'}
+    });
+  });
+
+  // tenders
+  state.tenders.forEach((t,idx)=>{
+    const delta = t.risk==='high' ? -8 : (t.risk==='mid' ? -3 : +2);
+    const reason = t.risk==='high' ? 'Высокий риск (интеграции/сроки/объём)'
+      : (t.risk==='mid' ? 'Средний риск (нужны рамки)' : 'Низкий риск');
+    ev.push({
+      id:`t-${idx}`, type:'tender', when:t.deadline,
+      title:t.title, summary:t.note, source:t.law, link:t.link,
+      evidence:'Документация закупки',
+      impact:{delta, reason}
+    });
+  });
+
+  // notes
+  state.notes.forEach((n,idx)=>{
+    const completeness =
+      (n.insights.pains.length?1:0) + (n.insights.needs.length?1:0) +
+      (n.insights.objections.length?1:0) + (n.insights.nextMoves.length?1:0);
+    const delta = completeness>=4 ? +5 : (completeness>=3 ? +3 : +1);
+    ev.push({
+      id:`n-${idx}`, type:'note', when:n.when,
+      title:`${n.channel.toUpperCase()} • ${n.author}`,
+      summary:n.text, source:'Заметка менеджера',
+      evidence:'Внутренняя запись',
+      impact:{delta, reason:'Контекст уточнён (качество заметок)'}
+    });
+  });
+
+  // derived items (demo)
+  ev.push({
+    id:'p-1', type:'proposal', when:'03.02.2026',
+    title:'Черновик КП (2 версии)',
+    summary:'C-level (экономика) + IT (план внедрения).',
+    source:'КП', evidence:'Шаблон + контекст',
+    impact:{delta:+6, reason:'Материалы подготовлены'}
+  });
+  ev.push({
+    id:'task-1', type:'task', when:'03.02.2026',
+    title:'Запросить вводные по интеграциям',
+    summary:'Список систем и формат данных → границы ответственности.',
+    source:'Задача', evidence:'План действий',
+    impact:{delta:+3, reason:'Следующий шаг сформирован'}
+  });
+
+  // Keep as-is for prototype (no date parsing)
+  return ev;
+}
+
+function typeBadge(t){
+  const map = {
+    media: ['Медиа', 'fill'],
+    tender: ['Тендер', 'fill'],
+    note: ['Заметка', ''],
+    proposal: ['КП', ''],
+    task: ['Задача', ''],
+  };
+  return map[t] || [t,''];
+}
+
+function renderMiniTimeline(){
+  const list = document.getElementById('miniTimeline');
+  const ev = buildTimeline().slice(0,6);
+  list.innerHTML = ev.map(e=>{
+    const [label, fill] = typeBadge(e.type);
+    const badge = `<span class="badge ${fill}">${label}</span>`;
+    return `
+      <div class="li" data-ev="${e.id}">
+        <div class="top">
+          <div style="min-width:0">
+            <div class="t">${escapeHtml(e.title)}</div>
+            <div class="meta">${escapeHtml(e.when)} • ${escapeHtml(label)}</div>
+          </div>
+          ${badge}
+        </div>
+        <div class="desc">${escapeHtml(e.summary)}</div>
+      </div>
+    `;
+  }).join('');
+
+  list.querySelectorAll('.li').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const id = el.getAttribute('data-ev');
+      const e = buildTimeline().find(x=>x.id===id);
+      openEvent(e);
+    });
+  });
+}
+
+function renderTimeline(){
+  const list = document.getElementById('timelineList');
+  const filter = document.getElementById('timelineFilter').value;
+  const q = (document.getElementById('timelineSearch').value || '').toLowerCase().trim();
+
+  let ev = buildTimeline();
+  if(filter !== 'all'){
+    const map = {media:'media', tender:'tender', note:'note', proposal:'proposal', task:'task'};
+    ev = ev.filter(e=>e.type === map[filter]);
+  }
+  if(q){
+    ev = ev.filter(e => (e.title+' '+e.summary+' '+(e.source||'')).toLowerCase().includes(q));
+  }
+
+  list.innerHTML = ev.map(e=>{
+    const [label, fill] = typeBadge(e.type);
+    const delta = e.impact?.delta ?? 0;
+    const deltaClass = delta>0 ? 'good' : (delta<0 ? 'bad' : 'warn');
+    const deltaBadge = `<span class="badge ${deltaClass}">${delta>0?'+':''}${delta} к %</span>`;
+    const src = e.source ? `<span class="badge">${escapeHtml(e.source)}</span>` : '';
+    const link = e.link ? `<a class="badge" href="${e.link}" target="_blank" rel="noreferrer">ссылка</a>` : '';
+    return `
+      <div class="li" data-ev="${e.id}">
+        <div class="top">
+          <div style="min-width:0">
+            <div class="t">${escapeHtml(e.title)}</div>
+            <div class="meta">${escapeHtml(e.when)} • ${escapeHtml(label)}</div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+            ${deltaBadge}
+            <span class="badge ${fill}">${escapeHtml(label)}</span>
+          </div>
+        </div>
+        <div class="desc">${escapeHtml(e.summary)}</div>
+        <div class="actions" style="margin-top:10px">
+          ${src}
+          ${link}
+          <button class="btn secondary small" data-act="to_kp">В КП</button>
+          <button class="btn secondary small" data-act="to_task">В задачу</button>
+          <button class="btn secondary small" data-act="to_mail">В письмо</button>
+        </div>
+        <div class="muted2" style="font-size:12px;margin-top:10px">
+          Доказательство: ${escapeHtml(e.evidence || '—')} • Причина влияния: ${escapeHtml(e.impact?.reason || '—')}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  list.querySelectorAll('.li').forEach(el=>{
+    const id = el.getAttribute('data-ev');
+    el.addEventListener('click', (evt)=>{
+      // avoid swallowing button clicks
+      if(evt.target && evt.target.matches('button')) return;
+      const e = buildTimeline().find(x=>x.id===id);
+      openEvent(e);
+    });
+    el.querySelectorAll('button[data-act]').forEach(btn=>{
+      btn.addEventListener('click', (evt)=>{
+        evt.stopPropagation();
+        const act = btn.getAttribute('data-act');
+        openModal('Быстрое действие', '', `<div class="hintBox">
+          Демо: действие <strong>${act}</strong> создало материал/задачу на основе события.
+        </div>`);
+      });
+    });
+  });
+}
+
+function openEvent(e){
+  if(!e) return;
+  const delta = e.impact?.delta ?? 0;
+  const deltaClass = delta>0 ? 'good' : (delta<0 ? 'bad' : 'warn');
+  openModal(
+    'Событие',
+    `${e.when} • ${e.type.toUpperCase()} • влияние: ${delta>0?'+':''}${delta}`,
+    `
+      <div class="box" style="border-radius:16px">
+        <div style="font-weight:900;font-size:15px">${escapeHtml(e.title)}</div>
+        <div class="muted" style="font-size:12px;margin-top:6px">
+          Источник: ${escapeHtml(e.source || '—')} ${e.link ? `• <a href="${e.link}" target="_blank">ссылка</a>` : ''}
+        </div>
+        <div class="divider"></div>
+        <div style="color:#334155;line-height:1.5">${escapeHtml(e.summary)}</div>
+        <div class="divider"></div>
+        <div class="hintBox">
+          <div><strong>Доказательство:</strong> ${escapeHtml(e.evidence || '—')}</div>
+          <div style="margin-top:8px"><strong>Почему влияет:</strong> ${escapeHtml(e.impact?.reason || '—')}</div>
+          <div style="margin-top:8px"><span class="badge ${deltaClass}">${delta>0?'+':''}${delta} к вероятности</span></div>
+        </div>
+      </div>
+    `
+  );
+}
+
+/** ------------------------------
+ *  2.1 Probability engine (based on EVERYTHING)
+ *  ------------------------------ */
+function computeProbability(){
+  let score = 45;
+  const reasons = [];
+
+  // 1) Relationship coverage
+  const hasLPR = state.relationship.some(r=>r.role==='ЛПР');
+  const hasInfl = state.relationship.some(r=>r.role==='Влиятель');
+  const hasBlock = state.relationship.some(r=>r.role==='Блокер');
+  const rmDelta = (hasLPR?6:0) + (hasInfl?3:0) + (hasBlock?2:0);
+  score += rmDelta;
+  reasons.push({label:'Покрытие ролей (Relationship Map)', delta:rmDelta});
+
+  // 2) Contacts & verification (depends on sourceMode + noStore)
+  let visible = state.people.filter(p => state.sourceMode==='official' ? p.origin==='official' : true);
+  const verified = visible.filter(p=>p.verified).length;
+  const needsCheck = visible.filter(p=>!p.verified).length;
+  let contactsDelta = Math.min(10, verified*3) - Math.min(6, needsCheck*1);
+  if(state.noStore) contactsDelta = Math.min(contactsDelta, 1); // no-store reduces confidence from contacts
+  score += contactsDelta;
+  reasons.push({label:'Контакты и верификация', delta:contactsDelta});
+
+  // 3) Notes quality / amount
+  const notesDelta = Math.min(10, state.notes.length*3);
+  score += notesDelta;
+  reasons.push({label:'История общения (кол-во записей)', delta:notesDelta});
+
+  // 4) Signals from media & tenders
+  let signalDelta = 0;
+  state.media.forEach(m=>{
+    if(['budget','import','growth'].includes(m.tag)) signalDelta += 2;
+    if(m.tag==='risk') signalDelta -= 2;
+  });
+  state.tenders.forEach(t=>{
+    if(t.risk==='high') signalDelta -= 6;
+    if(t.risk==='mid') signalDelta -= 2;
+    if(t.risk==='low') signalDelta += 1;
+  });
+  score += signalDelta;
+  reasons.push({label:'Сигналы (медиа/тендеры)', delta:signalDelta});
+
+  // 5) Compliance confidence impact (not the deal itself, but model confidence)
+  const compDelta = state.noStore ? -5 : (state.sourceMode==='official' ? -2 : 0);
+  score += compDelta;
+  reasons.push({label:'Ограничения комплаенса (уверенность)', delta:compDelta});
+
+  // 6) ROI attractiveness
+  const {costBefore, costAfter} = state.roi;
+  const economy = costBefore - costAfter;
+  const roi = costAfter>0 ? Math.round((economy / costAfter)*100) : 0;
+  let roiDelta = (roi>=100)?6 : (roi>=50)?3 : (roi>=15)?1 : -2;
+  score += roiDelta;
+  reasons.push({label:'Экономика (ROI)', delta:roiDelta});
+  
+  // 7) Decision Path (Buying Committee Flow)
+  const dpDelta = computeDecisionDelta();
+  score += dpDelta;
+  reasons.push({label:'Decision Path (Buying Committee Flow)', delta:dpDelta});
+
+  // 8) Deal Economics (seller-side)
+  const econDelta = computeEconomicsDelta();
+  score += econDelta;
+  reasons.push({label:'Deal Economics (маржа/риски)', delta:econDelta});
+
+  // 9) Red Flags penalty (aggregated)
+  const flags = buildRedFlags();
+  const flagPenalty = clamp(-Math.round(flags.filter(f=>f.level==='bad').length*4 + flags.filter(f=>f.level==='warn').length*2), -20, 0);
+  score += flagPenalty;
+  reasons.push({label:'Red Flags (штраф)', delta:flagPenalty});
+
+
+  // 7) Timeline evidence richness: number of events
+  const evCount = buildTimeline().length;
+  const evDelta = clamp(Math.round(evCount/4), 0, 6); // 0..6
+  score += evDelta;
+  reasons.push({label:'Насыщенность Timeline (события/доказательства)', delta:evDelta});
+
+  const value = clamp(Math.round(score), 0, 100);
+  return { value, reasons, economy, roi };
+}
+
+/** ------------------------------
+ *  1.3 Next Best Actions (top 3)
+ *  ------------------------------ */
+function buildNextBestActions(prob){
+  const actions = [];
+
+  const hasHighRiskTender = state.tenders.some(t=>t.risk==='high');
+  if(hasHighRiskTender){
+    actions.push({
+      title:'Зафиксировать границы интеграций',
+      why:'В тендере высокий риск из-за нераскрытых интеграций.',
+      impact:8,
+      cta:'Сформировать формулировки'
+    });
+  }
+
+  const lprUnknown = state.relationship.some(r=>r.role==='ЛПР' && r.stance==='unknown');
+  if(lprUnknown){
+    actions.push({
+      title:'Согласовать критерии окупаемости с ЛПР',
+      why:'ЛПР (финансы) — нужен порог ROI/срок и критерий успеха.',
+      impact:6,
+      cta:'Сгенерировать 7 вопросов'
+    });
+  }
+
+  actions.push({
+    title:'Собрать вводные и отправить 2 версии КП',
+    why:'Клиент уже запросил C-level + IT версию.',
+    impact:7,
+    cta:'Сформировать КП из контекста'
+  });
+
+  if(state.sourceMode==='plus_profiles' && state.people.some(p=>p.origin==='profile' && !p.verified)){
+    actions.push({
+      title:'Верифицировать публичные профили',
+      why:'Есть профили со статусом needs check — лучше подтвердить официально.',
+      impact:4,
+      cta:'Запросить подтверждение'
+    });
+  }
+
+  // comp-safety action
+  if(state.noStore){
+    actions.push({
+      title:'Сформировать playbook без сохранения контактов',
+      why:'Режим No-Store: фокус на ролях и речевых подсказках.',
+      impact:3,
+      cta:'Сгенерировать подсказки ролей'
+    });
+  }
+
+  
+  // vNext: Decision Path & Economics & Flags-driven actions
+  const flags = buildRedFlags();
+  if(flags.some(f=>f.title.includes('ЛПР'))){
+    actions.push({
+      title:'Подтвердить ЛПР и критерии решения',
+      why:'В Decision Path нет подтверждённого ЛПР. Без этого сделка часто «зависает».',
+      impact:9,
+      cta:'Сгенерировать список вопросов для ЛПР'
+    });
+  }
+  const econ = state.dealEconomics || {};
+  const marginPct = econ.price>0 ? Math.round(((econ.price - econ.cost)/econ.price)*100) : 0;
+  if(marginPct < (econ.minMarginPct||0)){
+    actions.push({
+      title:'Пересчитать экономику и зафиксировать рамки',
+      why:'Маржа ниже минимума — риск убыточной сделки. Нужны рамки интеграций/SLA/этапность.',
+      impact:8,
+      cta:'Сформировать рамки в КП'
+    });
+  }
+
+  actions.sort((a,b)=>b.impact-a.impact);
+  return actions.slice(0,3);
+}
+
+function renderOverview(){
+  const prob = computeProbability();
+
+  document.getElementById('economy').textContent = '≈ ' + fmtMoney(prob.economy);
+  document.getElementById('prob').textContent = prob.value;
+  document.getElementById('probBar').style.width = prob.value + '%';
+
+  // mini timeline
+  renderMiniTimeline();
+
+  // NBA
+  const nba = document.getElementById('nba');
+  const acts = buildNextBestActions(prob);
+  nba.innerHTML = acts.map((a,idx)=>`
+    <div class="li" data-nba="${idx}">
+      <div class="top">
+        <div style="min-width:0">
+          <div class="t">${escapeHtml(a.title)}</div>
+          <div class="meta">Ожидаемый эффект: +${a.impact}% к вероятности</div>
+        </div>
+        <span class="badge good">+${a.impact}%</span>
+      </div>
+      <div class="desc">${escapeHtml(a.why)}</div>
+      <div class="actions">
+        <button class="btn small" data-cta="${escapeHtml(a.cta)}">${escapeHtml(a.cta)}</button>
+        <button class="btn secondary small" data-why="1">Почему?</button>
+      </div>
+    </div>
+  `).join('');
+
+  nba.querySelectorAll('button[data-cta]').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      openModal('Next Best Action', '', `<div class="hintBox">
+        Демо: выполнено действие <strong>${escapeHtml(btn.getAttribute('data-cta'))}</strong>.
+        Система обновила Timeline, задачи и вероятность сделки.
+      </div>`);
+    });
+  });
+  nba.querySelectorAll('button[data-why]').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const lines = prob.reasons.map(r=>`${r.delta>=0?'+':''}${r.delta}: ${r.label}`).join('<br/>');
+      openModal('Почему такой %', 'Разложение по факторам (2.1)', `<div class="box">${lines}</div>`);
+    });
+  });
+}
+
+/** ------------------------------
+ *  Enrichment render (3.1/3.2)
+ *  ------------------------------ */
+function renderPeople(){
+  const tbody = document.querySelector('#peopleTable tbody');
+
+  let visible = state.people.filter(p => state.sourceMode==='official' ? p.origin==='official' : true);
+
+  // No-store: we hide email/phone in details and discourage storing
+  tbody.innerHTML = visible.map((p,idx)=>{
+    const status = p.verified
+      ? `<span class="badge good">verified</span>`
+      : `<span class="badge warn">needs check</span>`;
+    return `
+      <tr class="rowclick" data-person="${idx}">
+        <td>
+          <div style="font-weight:800">${escapeHtml(p.name)}</div>
+          <div class="muted" style="font-size:12px;margin-top:2px">${escapeHtml(p.title)}</div>
+        </td>
+        <td>${escapeHtml(p.dept)}</td>
+        <td style="text-align:right">${status}</td>
+      </tr>
+    `;
+  }).join('');
+
+  tbody.querySelectorAll('tr[data-person]').forEach(tr=>{
+    tr.addEventListener('click', ()=>{
+      const idx = Number(tr.getAttribute('data-person'));
+      const p = visible[idx];
+      const contacts = state.noStore
+        ? `<div class="hintBox">Режим <strong>No-Store</strong>: контакты не отображаются и не сохраняются. Показаны только подсказки ролей.</div>`
+        : `<div class="box" style="background:#fbfcfe">
+            <div class="miniTitle">Контакты (публичные бизнес-)</div>
+            <div style="margin-top:10px;color:#334155;line-height:1.6">
+              ✉️ ${escapeHtml(p.email || '—')}<br/>
+              📞 ${escapeHtml(p.phone || '—')}
+            </div>
+          </div>`;
+
+      openModal(
+        'Контакт',
+        'Публичные бизнес-данные (с provenance)',
+        `
+          <div class="box">
+            <div style="font-weight:900;font-size:16px">${escapeHtml(p.name)}</div>
+            <div class="muted" style="margin-top:4px">${escapeHtml(p.title)} • ${escapeHtml(p.dept)}</div>
+            <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+              <span class="badge fill">${escapeHtml(p.origin==='official'?'official':'profile')}</span>
+              <span class="badge ${p.verified?'good':'warn'}">${p.verified?'verified':'needs check'}</span>
+              <span class="badge">обновлено: ${escapeHtml(p.updated||'—')}</span>
+            </div>
+          </div>
+          ${contacts}
+          <div class="box" style="margin-top:12px">
+            <div class="miniTitle">Provenance</div>
+            <div style="margin-top:10px;color:#334155;line-height:1.5">
+              Источник: ${escapeHtml(p.source || '—')}<br/>
+              URL: ${p.url ? `<a href="${p.url}" target="_blank" rel="noreferrer">${escapeHtml(p.url)}</a>` : '—'}
+            </div>
+          </div>
+
+          <div class="actions" style="margin-top:12px">
+            <button class="btn secondary" onclick="quickAction('Запланировать касание')">🎯 Запланировать касание</button>
+            <button class="btn secondary" onclick="quickAction('Скрипт под роль')">💬 Скрипт под роль</button>
+          </div>
+        `
+      );
+    });
+  });
+
+  document.getElementById('srcBadge').textContent = state.sourceMode === 'official' ? 'official' : '+profiles';
+}
+
+/** ------------------------------
+ *  Relationship Map render (2.1 coverage input)
+ *  ------------------------------ */
+let relSelectedId = null;
+function renderRelationship(){
+  const relList = document.getElementById('relList');
+  const details = document.getElementById('relDetails');
+
+  relList.innerHTML = state.relationship.map(r=>{
+    const stanceBadge =
+      r.stance==='ally' ? `<span class="badge good">ally</span>` :
+      r.stance==='block' ? `<span class="badge bad">block</span>` :
+      r.stance==='neutral' ? `<span class="badge">neutral</span>` : `<span class="badge warn">unknown</span>`;
+    return `
+      <div class="li" data-rel="${r.id}">
+        <div class="top">
+          <div style="min-width:0">
+            <div class="t">${escapeHtml(r.role)} • ${escapeHtml(r.name)}</div>
+            <div class="meta">${escapeHtml(r.title)} • ${escapeHtml(r.dept)} • влияние: ${r.influence}/5</div>
+          </div>
+          ${stanceBadge}
+        </div>
+        <div class="desc">${escapeHtml((r.matters||[]).slice(0,2).join(' · '))}</div>
+      </div>
+    `;
+  }).join('');
+
+  function showRel(r){
+    relSelectedId = r.id;
+    details.innerHTML = `
+      <div style="font-weight:900;font-size:16px">${escapeHtml(r.name)}</div>
+      <div class="muted" style="margin-top:4px">${escapeHtml(r.role)} • ${escapeHtml(r.title)} • ${escapeHtml(r.dept)}</div>
+      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+        <span class="badge fill">influence ${r.influence}/5</span>
+        <span class="badge">${escapeHtml(r.stance)}</span>
+      </div>
+      <div class="divider"></div>
+
+      <div class="miniTitle">Что важно</div>
+      <ul class="bullets">${(r.matters||[]).map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul>
+
+      <div class="divider"></div>
+      <div class="miniTitle">Чего боится</div>
+      <ul class="bullets">${(r.fears||[]).map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul>
+
+      <div class="divider"></div>
+      <div class="miniTitle">Что говорить (речевые подсказки)</div>
+      <ul class="bullets">${(r.say||[]).map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul>
+
+      <div class="divider"></div>
+      <div class="miniTitle">Чего избегать</div>
+      <ul class="bullets">${(r.avoid||[]).map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul>
+
+      <div class="divider"></div>
+      <div class="miniTitle">Вопросы (что спросить)</div>
+      <ul class="bullets">${(r.ask||[]).map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul>
+
+      <div class="actions">
+        <button class="btn secondary" onclick="quickAction('В письмо для роли')">✉️ В письмо</button>
+        <button class="btn secondary" onclick="quickAction('В скрипт звонка')">📞 В скрипт</button>
+        <button class="btn secondary" onclick="quickAction('В КП')">🧾 В КП</button>
+      </div>
+    `;
+  }
+
+  relList.querySelectorAll('.li').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const id = el.getAttribute('data-rel');
+      const r = state.relationship.find(x=>x.id===id);
+      showRel(r);
+      // update probability due to RM selection too
+      renderAll();
+    });
+  });
+
+  if(!relSelectedId && state.relationship.length) showRel(state.relationship[0]);
+}
+
+/** ------------------------------
+ *  Media / Tenders / Notes renders
+ *  ------------------------------ */
+function renderMedia(){
+  const list = document.getElementById('mediaList');
+  list.innerHTML = state.media.map((m,idx)=>{
+    const tagClass = m.tag==='risk' ? 'bad' : (m.tag==='budget' ? 'good' : 'warn');
+    return `
+      <div class="li">
+        <div class="top">
+          <div style="min-width:0">
+            <div class="t">${escapeHtml(m.title)}</div>
+            <div class="meta">${escapeHtml(m.date)} • ${escapeHtml(m.source)}</div>
+          </div>
+          <span class="badge ${tagClass}">${escapeHtml(m.tag)}</span>
+        </div>
+        <div class="desc">${escapeHtml(m.summary)}</div>
+        <div class="actions">
+          <button class="btn secondary small" onclick="quickAction('Привязать к боли')">🔗 Привязать к боли</button>
+          <button class="btn secondary small" onclick="quickAction('Сгенерировать аргументы')">🎯 Аргументы</button>
+          <button class="btn secondary small" onclick="quickAction('Создать задачу')">📋 Задача</button>
+          ${m.link ? `<a class="badge" href="${m.link}" target="_blank" rel="noreferrer">ссылка</a>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderTenders(){
+  const list = document.getElementById('tenderList');
+  list.innerHTML = state.tenders.map((t,idx)=>{
+    const riskBadge = t.risk==='high' ? `<span class="badge bad">high risk</span>` :
+      (t.risk==='mid' ? `<span class="badge warn">mid risk</span>` : `<span class="badge good">low risk</span>`);
+    return `
+      <div class="li">
+        <div class="top">
+          <div style="min-width:0">
+            <div class="t">${escapeHtml(t.title)}</div>
+            <div class="meta">${escapeHtml(t.law)} • дедлайн: ${escapeHtml(t.deadline)} • бюджет: ${escapeHtml(t.budget)}</div>
+          </div>
+          ${riskBadge}
+        </div>
+        <div class="desc">${escapeHtml(t.note)}</div>
+        <div class="divider"></div>
+        <div class="miniTitle">Требования</div>
+        <ul class="bullets">${t.reqs.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul>
+        <div class="actions">
+          <button class="btn secondary small" onclick="quickAction('Чеклист вопросов')">✅ Чеклист</button>
+          <button class="btn secondary small" onclick="quickAction('Границы в КП')">🛡️ Границы в КП</button>
+          <button class="btn small" onclick="quickAction('Черновик КП под закупку')">🧾 Черновик КП</button>
+          ${t.link ? `<a class="badge" href="${t.link}" target="_blank" rel="noreferrer">ссылка</a>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderNotes(){
+  const list = document.getElementById('notesList');
+  list.innerHTML = state.notes.map((n,idx)=>{
+    return `
+      <div class="li">
+        <div class="top">
+          <div style="min-width:0">
+            <div class="t">${escapeHtml(n.when)}</div>
+            <div class="meta">${escapeHtml(n.channel)} • автор: ${escapeHtml(n.author)}</div>
+          </div>
+          <span class="badge fill">analyzed</span>
+        </div>
+        <div class="desc">${escapeHtml(n.text)}</div>
+        <div class="divider"></div>
+        <div class="two">
+          ${insBox('Боли', n.insights.pains)}
+          ${insBox('Потребности', n.insights.needs)}
+          ${insBox('Возражения', n.insights.objections)}
+          ${insBox('Следующие шаги', n.insights.nextMoves)}
+        </div>
+        <div class="divider"></div>
+        <div class="muted2" style="font-size:12px">Роли: ${escapeHtml(n.insights.roles.join(' · '))}</div>
+        <div class="actions">
+          <button class="btn secondary small" onclick="quickAction('Письмо после встречи')">✉️ Письмо</button>
+          <button class="btn secondary small" onclick="quickAction('Скрипт звонка')">📞 Скрипт</button>
+          <button class="btn small" onclick="quickAction('КП из записи')">🧾 КП из записи</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+function insBox(title, items){
+  return `
+    <div class="box" style="background:#fbfcfe">
+      <div class="miniTitle">${escapeHtml(title)}</div>
+      <ul class="bullets">${(items||[]).map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul>
+    </div>
+  `;
+}
+
+/** ------------------------------
+ *  ROI / КП story
+ *  ------------------------------ */
+function renderRoiAndStory(){
+  const {costBefore, costAfter} = state.roi;
+  const economy = costBefore - costAfter;
+  const roi = costAfter>0 ? Math.round((economy / costAfter)*100) : 0;
+
+  document.getElementById('roiEconomy').textContent = fmtMoney(economy);
+  document.getElementById('roiVal').textContent = roi + '%';
+
+  // Story
+  const mode = document.getElementById('kpMode').value;
+  const hook = mode==='it'
+    ? 'Сфокусируемся на архитектуре внедрения, безопасности и минимальной нагрузке на инфраструктуру.'
+    : mode==='partner'
+      ? 'Версия для партнёра: контроль скидок, прозрачная маржа, аккуратная спецификация.'
+      : 'Сфокусируемся на экономике, рисках и быстром эффекте без тяжёлых изменений.';
+
+  const pains = [
+    'Отсутствие прозрачности по лицензиям и ИТ-активам',
+    'Риск проверок/штрафов и репутационных потерь',
+    'Высокая нагрузка на ИТ при ручных процессах',
+  ];
+
+  const story = `
+    <div style="font-weight:900">${mode==='it'?'КП (для ИТ/ИБ)':mode==='partner'?'КП (партнёрская версия)':'КП (для C-level)'}</div>
+    <div class="muted" style="margin-top:8px">${escapeHtml(hook)}</div>
+    <div class="divider"></div>
+
+    <div class="miniTitle">1) Контекст и проблема</div>
+    <ul class="bullets">${pains.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul>
+
+    <div class="divider"></div>
+    <div class="miniTitle">2) Экономика</div>
+    <ul class="bullets">
+      <li>Текущие ежегодные затраты: <strong>${fmtMoney(costBefore)}</strong></li>
+      <li>После внедрения: <strong>${fmtMoney(costAfter)}</strong></li>
+      <li>Экономия: <strong>${fmtMoney(economy)}</strong> в год</li>
+      <li>ROI: <strong>${roi}%</strong></li>
+    </ul>
+
+    <div class="divider"></div>
+    <div class="miniTitle">3) План внедрения</div>
+    <ul class="bullets">
+      <li>Этап 1 (2–4 недели): Discovery и быстрая инвентаризация, первые отчёты.</li>
+      <li>Этап 2 (4–8 недель): нормализация данных, CMDB/учёт лицензий.</li>
+      <li>Этап 3 (опционально): интеграции и расширенные сценарии.</li>
+    </ul>
+  `;
+  document.getElementById('kpStory').innerHTML = story;
+
+  // Discount control
+  const badge = document.getElementById('discountBadge');
+  const text = document.getElementById('discountText');
+  if(state.role === 'head'){
+    badge.textContent = 'editable';
+    badge.className = 'badge good';
+    text.textContent = 'Роль руководителя: можно задавать лимиты скидок и правила утверждения.';
+  } else {
+    badge.textContent = 'view only';
+    badge.className = 'badge';
+    text.textContent = 'Роль менеджера/партнёра: лимиты скидок задаются руководителем (безопасно для маржи).';
+  }
+}
+
+/** ------------------------------
+ *  Tabs
+ *  ------------------------------ */
+function setTab(name){
+  document.querySelectorAll('#tabs .tab').forEach(t=>{
+    t.classList.toggle('active', t.getAttribute('data-tab')===name);
+  });
+  document.querySelectorAll('.tabpane').forEach(p=>p.style.display='none');
+  document.getElementById('pane-'+name).style.display = 'block';
+
+  if(name==='timeline') renderTimeline();
+  if(name==='relationship') renderRelationship();
+  if(name==='media') renderMedia();
+  if(name==='tenders') renderTenders();
+  if(name==='meetings') renderNotes();
+  if(name==='roi') renderRoiAndStory();
+  if(name==='decision') renderDecisionPath();
+  if(name==='economics') renderEconomics();
+  if(name==='winplan') renderWinPlan();
+  if(name==='ai_brief') renderAiBrief();
+  if(name==='competitors') renderCompetitors();
+  if(name==='loss') renderLoss();
+  if(name==='account') renderAccount();
+  if(name==='flags') renderFlags();
+
+}
+
+document.querySelectorAll('#tabs .tab').forEach(btn=>{
+  btn.addEventListener('click', ()=> setTab(btn.getAttribute('data-tab')));
+});
+
+/** ------------------------------
+ *  Actions / Buttons
+ *  ------------------------------ */
+function quickAction(label){
+  openModal('Действие', '', `<div class="hintBox">Демо: выполнено действие <strong>${escapeHtml(label)}</strong>. Обновили Timeline/задачи/КП.</div>`);
+}
+
+document.getElementById('btnExplainProb').addEventListener('click', ()=>{
+  const prob = computeProbability();
+  const lines = prob.reasons.map(r=>`${r.delta>=0?'+':''}${r.delta}: ${r.label}`).join('<br/>');
+  openModal('Почему такой %', 'Разложение по факторам (2.1)', `<div class="box">${lines}</div>`);
+});
+
+document.getElementById('btnRiskWhy').addEventListener('click', ()=>{
+  openModal('Риск-разбор', '', `<div class="hintBox">
+    Демо: ИИ показывает 3 причины риска и 3 способа снизить риск (границы интеграций, этапность, согласование критериев успеха).
+  </div>`);
+});
+
+document.getElementById('btnArgs').addEventListener('click', ()=>{
+  openModal('Аргументы', 'Сгенерировано из pain/need + медиа/тендеры', `
+    <div class="box">
+      <ol style="margin:0;padding-left:18px;color:#334155;line-height:1.6">
+        <li>Снижаем риск проверок и штрафов за счёт прозрачности лицензий и отчётности.</li>
+        <li>Быстрый старт: первые отчёты за 2–4 недели без тяжёлых интеграций.</li>
+        <li>Экономия OPEX: автоматизация учёта и снижение потерь.</li>
+        <li>Этапность: фиксируем рамки, расширяем только при подтверждённой ценности.</li>
+        <li>Под импортозамещение: управляемость активов ускоряет миграцию на отечественные решения.</li>
+      </ol>
+    </div>
+  `);
+});
+
+document.getElementById('btnOpenTimeline').addEventListener('click', ()=> setTab('timeline'));
+document.getElementById('btnExportTimeline').addEventListener('click', ()=>{
+  openModal('Экспорт', '', `<div class="hintBox">Демо: экспорт Timeline в PDF/CSV (с ссылками и доказательствами).</div>`);
+});
+
+document.getElementById('btnRelAuto').addEventListener('click', ()=>{
+  openModal('Автозаполнение', '', `<div class="hintBox">
+    Демо: система на основе общения/медиа/тендеров/должностей обновила Relationship Map:
+    определила ЛПР/влиятеля/блокера и добавила «что важно / что говорить».
+  </div>`);
+});
+
+
+/** ------------------------------
+ *  vNext buttons
+ *  ------------------------------ */
+document.getElementById('btnDecisionAuto')?.addEventListener('click', ()=>{
+  openModal('Decision Path', '', `<div class="hintBox">
+    Демо: автозаполнение Decision Path из контекста (должности/письма/тендеры/заметки).
+    Статусы обновлены, вероятность пересчитана.
+  </div>`);
+  // demo tweak: mark legal contacted, DM identified
+  const dm = state.decisionPath.find(x=>x.key==='dm');
+  const legal = state.decisionPath.find(x=>x.key==='legal');
+  if(dm && dm.status==='unknown') dm.status='identified';
+  if(legal && legal.status==='identified') legal.status='contacted';
+  renderAll();
+});
+
+document.getElementById('btnDecisionQuestions')?.addEventListener('click', ()=>{
+  openModal('Вопросы по Decision Path', 'Цель — подтвердить роли и порядок утверждения', `
+    <div class="box">
+      <ol style="margin:0;padding-left:18px;color:#334155;line-height:1.6">
+        <li>Кто финально утверждает бюджет и подпись по договору?</li>
+        <li>Какие критерии «да/нет» у ЛПР (ROI/срок/риски)?</li>
+        <li>Кто может заблокировать со стороны ИБ/юристов и какие требования?</li>
+        <li>Какой порядок согласований и типовой срок на каждом шаге?</li>
+        <li>Нужен ли пилот как этап перед закупкой/конкурсом?</li>
+      </ol>
+    </div>
+  `);
+});
+
+document.getElementById('btnEconExplain')?.addEventListener('click', ()=>{
+  openModal('Что убивает экономику', 'Deal Economics', `
+    <div class="box">
+      <ul class="bullets">
+        <li>Интеграции без ТЗ → перерасход часов → падение маржи.</li>
+        <li>SLA 24/7 → рост себестоимости поддержки.</li>
+        <li>Кастомизация «под клиента» без переиспользования → не окупается.</li>
+        <li>Фикс-сроки без рамок → риск штрафов/переработок.</li>
+      </ul>
+    </div>
+  `);
+});
+
+document.getElementById('btnEconBoundaries')?.addEventListener('click', ()=>{
+  openModal('Границы в КП', '', `<div class="hintBox">
+    Демо: система сформировала формулировки «границы интеграций/ответственности/этапность», чтобы защитить маржу.
+  </div>`);
+});
+
+document.getElementById('btnWinPlanAuto')?.addEventListener('click', ()=>{
+  openModal('Win Plan', '', `<div class="hintBox">
+    Демо: Win Plan собран из: ROI/КП + Decision Path + Relationship Map + тендерных рисков.
+  </div>`);
+  renderAll();
+});
+
+document.getElementById('btnWpToTasks')?.addEventListener('click', ()=>{
+  openModal('В задачи', '', `<div class="hintBox">Демо: риски и план из Win Plan превращены в задачи со сроками.</div>`);
+});
+document.getElementById('btnWpToKP')?.addEventListener('click', ()=>{
+  openModal('В КП', '', `<div class="hintBox">Демо: пункты Win Plan добавлены в КП как «план снижения рисков».</div>`);
+});
+
+document.getElementById('btnAiBriefGen')?.addEventListener('click', ()=>{
+  openModal('AI Brief', '', `<div class="hintBox">Демо: бриф пересобран под ближайшее касание и обновлён.</div>`);
+  renderAiBrief();
+});
+document.getElementById('btnAiBriefMail')?.addEventListener('click', ()=>{
+  openModal('Письмо', '', `<div class="hintBox">Демо: создано письмо после касания на основе AI Brief.</div>`);
+});
+document.getElementById('btnAiBriefCall')?.addEventListener('click', ()=>{
+  openModal('Скрипт', '', `<div class="hintBox">Демо: создан скрипт звонка на основе AI Brief.</div>`);
+});
+
+document.getElementById('btnCompAdvice')?.addEventListener('click', ()=>{
+  openModal('Стратегия против конкурентов', '', `<div class="hintBox">
+    Демо: стратегия сформирована на основе Loss Intelligence + Deal Economics + Red Flags.
+  </div>`);
+});
+
+document.getElementById('btnLossApply')?.addEventListener('click', ()=>{
+  openModal('Playbook обновлён', '', `<div class="hintBox">
+    Демо: причины проигрыша обновили playbook и аргументы для отрасли/сегмента.
+  </div>`);
+});
+document.getElementById('btnLossToArgs')?.addEventListener('click', ()=> quickAction('Аргументы из Loss Intelligence'));
+document.getElementById('btnLossToKP')?.addEventListener('click', ()=> quickAction('В КП: закрыть причины проигрыша'));
+document.getElementById('btnLossToFlags')?.addEventListener('click', ()=> quickAction('В Red Flags: контроль причин проигрыша'));
+
+document.getElementById('btnAccountScoreExplain')?.addEventListener('click', ()=>{
+  openModal('Account Health', '', `<div class="hintBox">
+    Демо: score рассчитывается из истории win/loss, активности тендеров, медиа‑сигналов, комплаенса и качества касаний.
+  </div>`);
+});
+document.getElementById('btnAccToPlan')?.addEventListener('click', ()=>{
+  setTab('winplan');
+  openModal('Account → Win Plan', '', `<div class="hintBox">Демо: сигналы аккаунта добавлены в Win Plan.</div>`);
+});
+document.getElementById('btnAccToTimeline')?.addEventListener('click', ()=>{
+  setTab('timeline');
+  openModal('Account → Timeline', '', `<div class="hintBox">Демо: события аккаунта добавлены в Timeline.</div>`);
+});
+
+document.getElementById('btnFlagsExplain')?.addEventListener('click', ()=>{
+  const flags = buildRedFlags();
+  const lines = flags.map(f=>`• ${escapeHtml(f.title)} — ${escapeHtml(f.why)}`).join('<br/>');
+  openModal('Почему флаги', 'Автопроверки сделки', `<div class="box">${lines || 'Флагов нет.'}</div>`);
+});
+
+
+document.getElementById('btnMediaRefresh').addEventListener('click', ()=>{
+  openModal('Медиапарсер', '', `<div class="hintBox">Демо: подтянули новые упоминания и пересчитали вероятность сделки.</div>`);
+});
+
+document.getElementById('btnTenderRefresh').addEventListener('click', ()=>{
+  openModal('Тендеры', '', `<div class="hintBox">Демо: обновили список закупок и извлекли новые требования/риски.</div>`);
+});
+
+document.getElementById('btnAnalyzeNote').addEventListener('click', ()=>{
+  const txt = (document.getElementById('noteText').value || '').trim();
+  if(!txt){
+    openModal('Нужен текст', '', `<div class="hintBox">Вставь заметку менеджера (хотя бы 1–2 предложения).</div>`);
+    return;
+  }
+
+  // naive extraction demo
+  const added = {
+    when: '02.02.2026 14:10',
+    channel: 'meet',
+    author: 'Менеджер',
+    text: txt,
+    insights: {
+      pains:['нет прозрачности','сроки поджимают'],
+      needs:['быстро','не нагрузить ИТ'],
+      objections:['дорого','долго'],
+      nextMoves:['согласовать пилот','зафиксировать границы'],
+      roles:['ЛПР: финдир','влиятель: ИТ'],
+    }
+  };
+  state.notes.unshift(added);
+  document.getElementById('noteText').value = '';
+  renderAll();
+  openModal('Проанализировано', '', `<div class="hintBox">Демо: ИИ выделил боли/роли/следующие шаги и обновил Client Profile + Timeline + вероятность.</div>`);
+});
+
+document.getElementById('btnUpload').addEventListener('click', ()=>{
+  openModal('Загрузка записи', '', `<div class="hintBox">Демо: загрузка аудио/видео → транскрибация → анализ → запись в Timeline.</div>`);
+});
+
+document.getElementById('btnRoiOnepager').addEventListener('click', ()=>{
+  openModal('ROI-onepager', '', `<div class="hintBox">Демо: выгрузили одностраничник ROI (PDF) с тезисами для C-level.</div>`);
+});
+
+document.getElementById('btnSaveTemplate').addEventListener('click', ()=>{
+  openModal('Шаблон', '', `<div class="hintBox">Демо: сохранили шаблон расчёта по отрасли и метрике.</div>`);
+});
+
+document.getElementById('btnGenKP').addEventListener('click', ()=>{
+  openModal('КП сформировано', '', `<div class="hintBox">
+    Демо: КП собрано из контекста (медиа/тендеры/общение) + ROI + Relationship Map + комплаенс-режим.
+  </div>`);
+});
+
+document.getElementById('btnExportKP').addEventListener('click', ()=>{
+  openModal('Экспорт КП', '', `<div class="hintBox">Демо: экспорт PDF/DOCX, две версии: C-level/IT.</div>`);
+});
+
+document.getElementById('btnRefresh').addEventListener('click', ()=>{
+  openModal('Обновление анализа', '', `<div class="hintBox">Демо: прогнали воркфлоу → обновили Client Profile/Timeline/Relationship Map → пересчитали вероятность.</div>`);
+  renderAll();
+});
+
+document.getElementById('btnNextStep').addEventListener('click', ()=>{
+  openModal('Следующий шаг', '', `<div class="hintBox">Демо: создана задача + черновик письма и добавлены события в Timeline.</div>`);
+});
+
+document.getElementById('btnEnrich').addEventListener('click', ()=>{
+  openModal('Enrichment', '', `<div class="hintBox">
+    Демо: подтянули публичные бизнес-контакты из выбранного режима источников и пересчитали вероятность.
+  </div>`);
+  renderAll();
+});
+
+/** Inputs bind */
+document.getElementById('role').addEventListener('change', (e)=>{
+  state.role = e.target.value;
+  document.getElementById('ownerBadge').textContent = state.role==='partner' ? 'Партнёр' : (state.role==='head' ? 'Руководитель' : 'Менеджер');
+  renderRoiAndStory();
+  renderAll();
+});
+
+document.getElementById('sourceMode').addEventListener('change', (e)=>{
+  state.sourceMode = e.target.value;
+  updateComplianceChip();
+  renderPeople();
+  renderAll();
+});
+document.getElementById('noStore').addEventListener('change', (e)=>{
+  state.noStore = e.target.checked;
+  updateComplianceChip();
+  renderPeople();
+  renderAll();
+});
+document.getElementById('companyInput').addEventListener('input', (e)=>{
+  state.company = e.target.value;
+  document.getElementById('companyName').textContent = state.company || '—';
+});
+
+document.getElementById('timelineFilter').addEventListener('change', renderTimeline);
+document.getElementById('timelineSearch').addEventListener('input', ()=>{ window.clearTimeout(window.__t); window.__t=setTimeout(renderTimeline, 120); });
+
+/** ROI inputs */
+function bindRoi(){
+  const metric = document.getElementById('metric');
+  const mv = document.getElementById('metricValue');
+  const cb = document.getElementById('costBefore');
+  const ca = document.getElementById('costAfter');
+
+  metric.addEventListener('change', ()=>{ state.roi.metric = metric.value; renderAll(); });
+  mv.addEventListener('input', ()=>{ state.roi.metricValue = Number(mv.value||0); renderAll(); });
+  cb.addEventListener('input', ()=>{ state.roi.costBefore = Number(cb.value||0); renderAll(); });
+  ca.addEventListener('input', ()=>{ state.roi.costAfter = Number(ca.value||0); renderAll(); });
+
+  document.getElementById('kpMode').addEventListener('change', ()=>{ renderRoiAndStory(); renderAll(); });
+}
+bindRoi();
+
+/** Utilities */
+function escapeHtml(str){
+  return String(str ?? '').replace(/[&<>"']/g, (m)=>({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
+  }[m]));
+}
+
+
+/** ------------------------------
+ *  vNext: Decision Path / Deal Economics / Win Plan / AI Brief / Competitors / Loss / Account / Red Flags
+ *  ------------------------------ */
+function statusDot(status){
+  const map = {
+    aligned:['good','aligned'],
+    contacted:['warn','contacted'],
+    identified:['warn','identified'],
+    unknown:['','unknown'],
+    blocked:['bad','blocked'],
+  };
+  const x = map[status] || ['','unknown'];
+  return `<span class="dot ${x[0]}"></span><span class="badge ${x[0]}">${x[1]}</span>`;
+}
+
+function renderDecisionPath(){
+  const flow = document.getElementById('decisionFlow');
+  const tbody = document.querySelector('#decisionTable tbody');
+  const hint = document.getElementById('decisionHint');
+
+  if(!flow || !tbody || !hint) return;
+
+  const items = state.decisionPath || [];
+  flow.innerHTML = items.map((s,i)=>{
+    const dot =
+      s.status==='aligned' ? 'good' :
+      s.status==='blocked' ? 'bad' :
+      (s.status==='contacted'||s.status==='identified') ? 'warn' : '';
+    return `<span class="flowNode"><span class="dot ${dot}"></span><strong>${escapeHtml(s.label)}</strong> → ${escapeHtml(s.who || '—')}</span>`;
+  }).join('');
+
+  tbody.innerHTML = items.map(s=>`
+    <tr>
+      <td><strong>${escapeHtml(s.label)}</strong></td>
+      <td>${escapeHtml(s.who || '—')}</td>
+      <td style="text-align:right">${statusDot(s.status)}</td>
+    </tr>
+  `).join('');
+
+  const dm = items.find(x=>x.key==='dm');
+  const sign = items.find(x=>x.key==='sign');
+  const legal = items.find(x=>x.key==='legal');
+
+  const hints = [];
+  if(dm && (dm.status==='unknown' || dm.status==='identified')) hints.push('Нет подтверждённого ЛПР: вероятность и скорость сделки страдают.');
+  if(sign && (sign.status==='unknown')) hints.push('Нет понятного подписанта: риск «всё согласовали — но не подписали».');
+  if(legal && (legal.status==='contacted' || legal.status==='aligned')) hints.push('ИБ/юристы подключены рано: ниже риск сюрпризов на финале.');
+  hint.textContent = hints.length ? hints.join(' ') : 'Decision Path выглядит достаточно заполненным — можно ускорять движение к подписи.';
+}
+
+function renderEconomics(){
+  const econ = state.dealEconomics || {};
+  const priceEl = document.getElementById('econPrice');
+  const costEl = document.getElementById('econCost');
+  const marginEl = document.getElementById('econMargin');
+  const minEl = document.getElementById('econMinMargin');
+  const killersEl = document.getElementById('econKillers');
+
+  if(!priceEl || !killersEl) return;
+
+  const marginPct = econ.price>0 ? Math.round(((econ.price - econ.cost) / econ.price) * 100) : 0;
+  const cls = marginPct >= (econ.minMarginPct||0) ? 'good' : 'bad';
+
+  priceEl.textContent = fmtMoney(econ.price||0);
+  costEl.textContent = fmtMoney(econ.cost||0);
+  marginEl.innerHTML = `<span class="badge ${cls}">${marginPct}%</span>`;
+  minEl.textContent = (econ.minMarginPct ?? '—') + '%';
+
+  killersEl.innerHTML = (econ.killers||[]).map(k=>`
+    <div class="li">
+      <div class="top">
+        <div style="min-width:0">
+          <div class="t">${escapeHtml(k.title)}</div>
+          <div class="meta">${escapeHtml(k.why)}</div>
+        </div>
+        <span class="badge ${k.level==='bad'?'bad':(k.level==='warn'?'warn':'good')}">${k.impact>0?'+':''}${k.impact}%</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderWinPlan(){
+  const wp = state.winPlan || {};
+  const goal = document.getElementById('wpGoal');
+  const deadline = document.getElementById('wpDeadline');
+  const crit = document.getElementById('wpCriteria');
+  const risks = document.getElementById('wpRisks');
+  if(!goal || !crit || !risks) return;
+
+  goal.textContent = wp.goal || '—';
+  deadline.textContent = wp.deadline || '—';
+  crit.innerHTML = (wp.criteria||[]).map(x=>`<li>${escapeHtml(x)}</li>`).join('');
+
+  risks.innerHTML = (wp.risks||[]).map(r=>`
+    <div class="li">
+      <div class="top">
+        <div style="min-width:0">
+          <div class="t">${escapeHtml(r.title)}</div>
+          <div class="meta">${escapeHtml(r.plan)}</div>
+        </div>
+        <span class="badge good">+${escapeHtml(r.impact)}%</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderAiBrief(){
+  const box = document.getElementById('aiBriefBox');
+  if(!box) return;
+  const b = state.aiBrief || {};
+  box.innerHTML = `
+    <div style="font-weight:900;font-size:15px">Бриф перед касанием</div>
+    <div class="divider"></div>
+    <ul class="bullets" style="margin-top:0">
+      <li><strong>С кем:</strong> ${escapeHtml(b.forWhom || '—')}</li>
+      <li><strong>Важно:</strong> ${(b.important||[]).map(escapeHtml).join(' · ') || '—'}</li>
+      <li><strong>Боится:</strong> ${(b.fears||[]).map(escapeHtml).join(' · ') || '—'}</li>
+      <li><strong>3 аргумента:</strong> ${(b.arguments||[]).slice(0,3).map(escapeHtml).join(' · ') || '—'}</li>
+      <li><strong>2 вопроса:</strong> ${(b.questions||[]).slice(0,2).map(escapeHtml).join(' · ') || '—'}</li>
+      <li><strong>Табу:</strong> ${(b.taboo||[]).map(escapeHtml).join(' · ') || '—'}</li>
+    </ul>
+    <div class="hintBox" style="margin-top:12px">
+      Демо: бриф формируется из Relationship Map, Decision Path, ROI/КП, медиа/тендеров и заметок.
+    </div>
+  `;
+}
+
+function renderCompetitors(){
+  const list = document.getElementById('competitorList');
+  const advice = document.getElementById('competitorAdvice');
+  if(!list || !advice) return;
+
+  list.innerHTML = (state.competitorsInDeal||[]).map(c=>`
+    <div class="li">
+      <div class="top">
+        <div style="min-width:0">
+          <div class="t">${escapeHtml(c.name)}</div>
+          <div class="meta"><strong>Сильные:</strong> ${(c.strong||[]).map(escapeHtml).join(' · ')||'—'}</div>
+        </div>
+        <span class="badge fill">in deal</span>
+      </div>
+      <div class="desc"><strong>Слабые:</strong> ${(c.weak||[]).map(escapeHtml).join(' · ')||'—'}</div>
+      <div class="actions" style="margin-top:10px">
+        <button class="btn secondary small" onclick="quickAction('Аргументы против ' + '${escapeHtml(c.name)}')">🎯 Аргументы</button>
+        <button class="btn secondary small" onclick="quickAction('В КП: дифференциаторы')">🧾 В КП</button>
+      </div>
+    </div>
+  `).join('');
+
+  // default advice
+  advice.textContent = (state.competitorsInDeal?.[0]?.tip) || 'Сфокусируйся на ценности и снижении рисков, а не на скидке.';
+}
+
+function renderLoss(){
+  const tbody = document.querySelector('#lossTable tbody');
+  if(!tbody) return;
+  tbody.innerHTML = (state.lossIntel||[]).map(r=>{
+    const cls = r.risk==='high' ? 'bad' : (r.risk==='mid' ? 'warn' : 'good');
+    return `
+      <tr>
+        <td><strong>${escapeHtml(r.reason)}</strong></td>
+        <td>${escapeHtml(r.desc)}</td>
+        <td style="text-align:right"><span class="badge ${cls}">${escapeHtml(r.risk)}</span></td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function renderAccount(){
+  const acc = state.account || {};
+  const score = document.getElementById('accScore');
+  const label = document.getElementById('accLabel');
+  const signals = document.getElementById('accSignals');
+  const hist = document.getElementById('accHistory');
+
+  if(!score || !signals || !hist) return;
+
+  score.textContent = `${acc.healthScore ?? '—'} / 100`;
+  label.textContent = acc.label || '—';
+
+  signals.innerHTML = (acc.signals||[]).map(x=>`<li>${escapeHtml(x)}</li>`).join('');
+  hist.innerHTML = (acc.history||[]).map(h=>`
+    <div class="li">
+      <div class="top">
+        <div style="min-width:0">
+          <div class="t">${escapeHtml(h.when)} • ${escapeHtml(h.title)}</div>
+          <div class="meta">${escapeHtml(h.amount || '')}</div>
+        </div>
+        <span class="badge fill">account</span>
+      </div>
+      <div class="desc">${escapeHtml(h.note || '')}</div>
+    </div>
+  `).join('');
+}
+
+function computeDecisionDelta(){
+  const items = state.decisionPath || [];
+  const dm = items.find(x=>x.key==='dm');
+  const sign = items.find(x=>x.key==='sign');
+  const legal = items.find(x=>x.key==='legal');
+
+  let d = 0;
+  if(dm && (dm.status==='aligned')) d += 6;
+  if(dm && (dm.status==='unknown' || dm.status==='identified')) d -= 8;
+  if(sign && sign.status==='aligned') d += 3;
+  if(sign && sign.status==='unknown') d -= 4;
+  if(legal && (legal.status==='contacted' || legal.status==='aligned')) d += 3;
+  if(items.some(x=>x.status==='blocked')) d -= 10;
+  return d;
+}
+
+function computeEconomicsDelta(){
+  const econ = state.dealEconomics || {};
+  const marginPct = econ.price>0 ? ((econ.price - econ.cost)/econ.price)*100 : 0;
+  let d = 0;
+  if(marginPct >= (econ.minMarginPct||0)) d += 3;
+  else d -= 6;
+  (econ.killers||[]).forEach(k=>{ d += (k.impact||0); });
+  // keep within a reasonable range
+  return clamp(Math.round(d), -15, 10);
+}
+
+function buildRedFlags(){
+  const flags = [];
+
+  // Decision path
+  const items = state.decisionPath || [];
+  const dm = items.find(x=>x.key==='dm');
+  const sign = items.find(x=>x.key==='sign');
+  if(!dm || dm.status==='unknown' || dm.status==='identified') flags.push({level:'bad', title:'Нет подтверждённого ЛПР', why:'Без ЛПР сделка часто «висит» или умирает на согласовании.'});
+  if(!sign || sign.status==='unknown') flags.push({level:'warn', title:'Не определён подписант', why:'Риск затяжки на финальном согласовании/подписи.'});
+  if(items.some(x=>x.status==='blocked')) flags.push({level:'bad', title:'Есть блокер в Decision Path', why:'Нужен план снятия возражений/условий блокера.'});
+
+  // Economics
+  const econ = state.dealEconomics || {};
+  const marginPct = econ.price>0 ? Math.round(((econ.price - econ.cost)/econ.price)*100) : 0;
+  if(marginPct < (econ.minMarginPct||0)) flags.push({level:'bad', title:'Маржа ниже минимума', why:'Сделка может быть убыточной — нужен пересчёт/рамки/SLA/этапность.'});
+
+  // ROI
+  const {costBefore, costAfter} = state.roi;
+  const economy = costBefore - costAfter;
+  const roi = costAfter>0 ? Math.round((economy / costAfter)*100) : 0;
+  if(roi < 15) flags.push({level:'warn', title:'Слабый ROI для ЛПР', why:'Нужно усилить экономический кейс или изменить рамки пилота.'});
+
+  // Tender risk
+  if(state.tenders.some(t=>t.risk==='high')) flags.push({level:'bad', title:'Рисковый тендер (не раскрыты интеграции)', why:'Высокий риск перерасхода объёма и сроков — фиксируй рамки.'});
+
+  // Compliance
+  if(state.noStore) flags.push({level:'warn', title:'No‑Store режим', why:'Ограничения комплаенса снижают уверенность модели и требуют аккуратного процесса.'});
+  if(state.sourceMode==='plus_profiles' && state.people.some(p=>p.origin==='profile' && !p.verified)) flags.push({level:'warn', title:'Есть не верифицированные профили', why:'Нужна верификация через официальные источники/запрос.'});
+
+  return flags;
+}
+
+function renderFlags(){
+  const list = document.getElementById('flagsList');
+  if(!list) return;
+  const flags = buildRedFlags();
+  list.innerHTML = flags.length ? flags.map((f,idx)=>`
+    <div class="li">
+      <div class="top">
+        <div style="min-width:0">
+          <div class="t">${escapeHtml(f.title)}</div>
+          <div class="meta">${escapeHtml(f.why)}</div>
+        </div>
+        <span class="badge ${f.level==='bad'?'bad':(f.level==='warn'?'warn':'good')}">${escapeHtml(f.level)}</span>
+      </div>
+      <div class="actions" style="margin-top:10px">
+        <button class="btn secondary small" onclick="quickAction('Снять флаг: ${escapeHtml(f.title)}')">🛠️ План снятия</button>
+        <button class="btn secondary small" onclick="quickAction('В Win Plan')">🏁 В Win Plan</button>
+      </div>
+    </div>
+  `).join('') : `<div class="hintBox">Флагов не найдено — можно ускоряться.</div>`;
+}
+
+/** Render all */
+function renderAll(){
+  updateComplianceChip();
+  renderClientProfile();
+  renderPeople();
+  renderOverview();
+  // if timeline pane is open - refresh it
+  const active = document.querySelector('#tabs .tab.active')?.getAttribute('data-tab');
+  if(active==='timeline') renderTimeline();
+  if(active==='relationship') renderRelationship();
+  if(active==='media') renderMedia();
+  if(active==='tenders') renderTenders();
+  if(active==='meetings') renderNotes();
+  if(active==='roi') renderRoiAndStory();
+  if(active==='decision') renderDecisionPath();
+  if(active==='economics') renderEconomics();
+  if(active==='winplan') renderWinPlan();
+  if(active==='ai_brief') renderAiBrief();
+  if(active==='competitors') renderCompetitors();
+  if(active==='loss') renderLoss();
+  if(active==='account') renderAccount();
+  if(active==='flags') renderFlags();
+
+}
+
+renderAll();
+
+/** Quality-of-life: keyboard */
+document.addEventListener('keydown', (e)=>{
+  if(e.key==='Escape') closeModal();
+  if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='k'){
+    e.preventDefault();
+    openModal('Command Bar (demo)', 'Нажми на пункты — они создают действия/материалы', `
+      <div class="list">
+        ${['Создать КП','Добавить заметку','Сформировать письмо после встречи','Пробить компанию (официально)','Сформировать скрипт звонка']
+          .map(x=>`<div class="li" onclick="quickAction('${escapeHtml(x)}')"><div class="t">${escapeHtml(x)}</div><div class="meta">Ctrl/⌘+K • demo</div></div>`)
+          .join('')}
+      </div>
+      <div class="hintBox" style="margin-top:12px">
+        Подсказка: сочетание <span class="kbd">Ctrl/⌘</span> + <span class="kbd">K</span> — это «сбер-уровень скорости».
+      </div>
+    `);
+  }
+});
+
+// -----------------------------------------------------------------------------
+// Companies & Clients API integration
+// -----------------------------------------------------------------------------
+// Fetch the list of companies from the backend and render cards. Selecting a
+// company updates the header (name/ИНН/отрасль) and loads associated clients.
+
+let selectedCompanyId = null;
+
+async function fetchCompanies() {
+  try {
+    const res = await fetch('/api/companies');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const companies = await res.json();
+    renderCompanyCards(companies);
+    if (companies.length > 0) {
+      selectCompany(companies[0]);
+    }
+  } catch (e) {
+    console.warn('Failed to fetch companies', e);
+  }
+}
+
+function renderCompanyCards(companies) {
+  const container = document.getElementById('companyCards');
+  if (!container) return;
+  container.innerHTML = '';
+  companies.forEach(c => {
+    const div = document.createElement('div');
+    div.className = 'li';
+    div.innerHTML = `<div class="top"><span class="t">${escapeHtml(c.name)}</span><span class="meta">${escapeHtml(c.industry || '')}</span></div>`;
+    div.addEventListener('click', () => selectCompany(c));
+    container.appendChild(div);
+  });
+}
+
+function selectCompany(company) {
+  selectedCompanyId = company.id;
+  // Update header chips
+  const companyNameEl = document.getElementById('companyName');
+  const innEl = document.getElementById('inn');
+  const industryEl = document.getElementById('industry');
+  if (companyNameEl) companyNameEl.textContent = company.name;
+  if (innEl) innEl.textContent = company.inn || '';
+  if (industryEl) industryEl.textContent = company.industry || '';
+  loadClients();
+}
+
+async function loadClients() {
+  if (!selectedCompanyId) return;
+  try {
+    const res = await fetch(`/api/clients?company_id=${selectedCompanyId}`);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const clients = await res.json();
+    renderClients(clients);
+  } catch (e) {
+    console.warn('Failed to fetch clients', e);
+  }
+}
+
+function renderClients(clients) {
+  const container = document.getElementById('clientCards');
+  if (!container) return;
+  container.innerHTML = '';
+  clients.forEach(client => {
+    const div = document.createElement('div');
+    div.className = 'li';
+    div.innerHTML = `<div class="top"><span class="t">${escapeHtml(client.name)}</span><span class="meta">${escapeHtml(client.position || '')}</span></div><div class="desc">${escapeHtml(client.department || '')}</div>`;
+    container.appendChild(div);
+  });
+}
+
+// Start loading companies once the DOM is ready
+document.addEventListener('DOMContentLoaded', fetchCompanies);
+
+</script>
+</body>
+</html>
+<!-- End of file -->
