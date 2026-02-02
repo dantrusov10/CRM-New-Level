@@ -1,0 +1,11 @@
+{
+    # Global options
+    email you@example.com
+}
+
+{$DOMAIN} {
+    # If DOMAIN is blank the site will still be served, but without HTTPS.
+    # The reverse proxy points to nginx which serves the UI and proxies /api.
+    reverse_proxy nginx:80
+    encode gzip
+}
