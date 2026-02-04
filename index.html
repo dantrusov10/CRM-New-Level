@@ -4,29 +4,51 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>CRM New Level — vNext (Kanban + Admin)</title>
+
+<link rel="stylesheet" href="vendor/inter/inter.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="vendor/bootstrap/bootstrap.min.css">
+<link rel="stylesheet" href="vendor/bootstrap-icons/bootstrap-icons.css">
+
 <style>
 :root{
-  --bg:#f6f7f9;
-  --card:#ffffff;
-  --border:rgba(15,23,42,.10);
-  --text:#0f172a;
-  --muted:#64748b;
-  --muted2:#94a3b8;
-  --shadow:0 1px 0 rgba(15,23,42,.02), 0 12px 30px rgba(15,23,42,.06);
-  --radius:18px;
-  --radius2:14px;
-  --primary:#0f172a;
-  --good:#0f766e;
+  /* Brand / UI tokens (Light) */
+  --bg:#F8F9FA;
+  --card:#FFFFFF;
+  --border:#E0E0E0;
+  --text:#1F1F1F;
+  --muted:#5A5A5A;
+  --muted2:#A0A0A0;
+
+  --primary:#0057FF;
+  --good:#2EBE5E;
+  --bad:#EF5350;
   --warn:#b45309;
-  --bad:#b91c1c;
-  --chip:#f1f5f9;
-  --focus:0 0 0 4px rgba(15,23,42,.10);
+
+  --chip:rgba(0,87,255,.12);
+  --shadow:0px 2px 6px rgba(0,0,0,0.04);
+
+  --radius:12px;      /* cards */
+  --radius2:8px;      /* buttons */
+  --focus:0 0 0 3px rgba(0,87,255,.20);
+
   --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
-  --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+  --sans: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+
+  /* Bootstrap 5.3 CSS vars override (optional use) */
+  --bs-body-bg: var(--bg);
+  --bs-body-color: var(--text);
+  --bs-border-color: var(--border);
+  --bs-primary: var(--primary);
+  --bs-success: var(--good);
+  --bs-danger: var(--bad);
 }
 *{box-sizing:border-box}
 html,body{height:100%}
-body{margin:0;font-family:var(--sans);background:var(--bg);color:var(--text)}
+body{margin:0;font-family:var(--sans);font-size:14px;line-height:1.5;background:var(--bg);color:var(--text)}
 a{color:inherit}
 button,input,select,textarea{font-family:inherit}
 .small{font-size:12px;color:var(--muted)}
@@ -58,7 +80,7 @@ button,input,select,textarea{font-family:inherit}
   width:44px;height:44px;border-radius:16px;background:var(--primary);
   display:grid;place-items:center;color:white;font-weight:900;letter-spacing:-.02em;
 }
-.brand h1{margin:0;font-size:14px;letter-spacing:-.01em}
+.brand h1{margin:0;font-size:24px;font-weight:600;letter-spacing:-0.005em}
 .brand .sub{margin-top:2px;font-size:12px;color:var(--muted)}
 
 .nav{margin-top:14px;display:grid;gap:6px}
@@ -108,29 +130,22 @@ button,input,select,textarea{font-family:inherit}
   display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;
   margin-bottom:14px;
 }
-.title h2{margin:0;font-size:18px;letter-spacing:-.02em}
+.title h2{margin:0;font-size:20px;font-weight:500;letter-spacing:-0.002em}
 .title .meta{margin-top:4px;font-size:12px;color:var(--muted)}
 
 .controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.input, .select, .btn{
-  border-radius:14px;border:1px solid var(--border);
-  background:var(--card);
-  height:40px;
-  padding:0 12px;
-  font-size:13px;
-  color:var(--text);
-  outline:none;
-}
+.input, .select{border-radius:8px;border:1px solid #D0D0D0;background:var(--card);height:40px;padding:0 12px;font-size:14px;color:var(--text);outline:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);height:40px;padding:0 14px;font-size:14px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;background:var(--primary);color:#fff;outline:none}
 .input{min-width:250px}
 .select{padding-right:34px}
-.input:focus,.select:focus,.btn:focus{box-shadow:var(--focus)}
+.input:focus,.select:focus,.btn:focus{box-shadow:0 0 0 3px rgba(0,87,255,0.25)}
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:8px;
   cursor:pointer;font-weight:900;background:var(--primary);color:white;border:1px solid rgba(15,23,42,.16);
 }
-.btn.secondary{background:var(--card);color:var(--text)}
+.btn.secondary{background:#F1F3F5;color:var(--text);border:1px solid #E0E0E0}
 .btn.ghost{background:transparent}
-.btn.small{height:34px;border-radius:12px;font-size:12px;padding:0 10px}
+.btn.small{height:36px;border-radius:8px;font-size:12px;padding:0 12px}
 .btn:active{transform:translateY(1px)}
 
 .card{
@@ -215,7 +230,7 @@ button,input,select,textarea{font-family:inherit}
 .panel{
   padding:14px 14px 16px 14px;
 }
-.panel h3{margin:0;font-size:13px;letter-spacing:-.01em}
+.panel h3{margin:0;font-size:18px;font-weight:500;letter-spacing:-0.002em}
 .panel .sub{margin-top:4px;font-size:12px;color:var(--muted)}
 
 .table{
@@ -281,6 +296,111 @@ button,input,select,textarea{font-family:inherit}
 .event .t{font-weight:1000;font-size:12px}
 .event .d{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.35}
 hr.sep{border:none;border-top:1px solid rgba(15,23,42,.08);margin:12px 0}
+
+/* ================================
+   Brandbook UI overrides (2026-02)
+   ================================ */
+body{font-size:14px;line-height:1.5}
+h1{font-size:24px;font-weight:600;letter-spacing:-0.005em;margin:0}
+h2{font-size:20px;font-weight:500;margin:0}
+h3{font-size:18px;font-weight:500;margin:0}
+.small{font-size:12px;color:var(--muted)}
+.meta,.desc,.muted{color:var(--muted)}
+.muted2{color:var(--muted2)}
+
+/* Surfaces */
+.card,.sidecard,.panel,.kpi,.kanbanCol,.modalBox,.toast{
+  border-radius:var(--radius);
+  border:1px solid var(--border);
+  box-shadow:var(--shadow);
+  background:var(--card);
+}
+.sep,.navsep{background:var(--border)}
+
+/* Buttons */
+.btn{
+  height:40px;
+  border-radius:var(--radius2);
+  font-size:14px;
+  font-weight:600;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  background:var(--primary) !important;
+  border:1px solid rgba(0,87,255,.22) !important;
+}
+.btn.secondary{
+  height:36px;
+  background:#F1F3F5 !important;
+  color:var(--text) !important;
+  border:1px solid var(--border) !important;
+  text-transform:none;
+  letter-spacing:0;
+  font-weight:500;
+}
+.btn.danger{
+  background:var(--bad) !important;
+  border-color:rgba(239,83,80,.35) !important;
+}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn:focus{box-shadow:var(--focus)!important}
+.btn.ghost{
+  background:transparent !important;
+  color:var(--text) !important;
+  border:1px solid var(--border) !important;
+  text-transform:none;
+  letter-spacing:0;
+}
+
+/* Inputs */
+.input,.select,textarea{
+  height:40px;
+  border-radius:10px;
+  border:1px solid #D0D0D0 !important;
+  background:#fff !important;
+  font-size:14px;
+}
+.input::placeholder{color:#A0A0A0}
+.input:focus,.select:focus,textarea:focus{box-shadow:var(--focus)!important;border-color:var(--primary)!important;outline:none}
+
+/* Badges / chips */
+.badge{
+  border-radius:999px;
+  font-weight:500;
+  border:1px solid var(--border);
+}
+.badge.fill{background:rgba(0,87,255,.12);border-color:rgba(0,87,255,.18);color:var(--primary)}
+.badge.good{background:rgba(46,190,94,.12);border-color:rgba(46,190,94,.20);color:var(--good)}
+.badge.bad{background:rgba(239,83,80,.12);border-color:rgba(239,83,80,.20);color:var(--bad)}
+
+/* Tables */
+.table{
+  border-radius:12px !important;
+  border:1px solid var(--border) !important;
+  overflow:hidden;
+}
+.table th{
+  font-size:12px;
+  font-weight:600;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:.04em;
+}
+.table tr{min-height:48px}
+.table tbody tr:nth-child(even){background:#FAFAFA}
+
+/* Hover/active states for clickable items */
+.navbtn:hover,.card:hover,.rowbtn:hover{filter:brightness(0.99)}
+.navbtn:active,.card:active,.rowbtn:active{transform:translateY(1px)}
+
+
+/* --- Design system patch (Reshenie) --- */
+.table thead th{font-size:12px;color:var(--muted);font-weight:600;}
+.table tbody tr{min-height:48px;}
+.table-striped>tbody>tr:nth-of-type(odd)>*{--bs-table-bg-type:#FAFAFA;}
+.form-control,.form-select{height:40px;font-size:14px;border-color:#D0D0D0;}
+.form-control:focus,.form-select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,87,255,0.25);}
+.btn-primary{--bs-btn-bg:var(--primary);--bs-btn-border-color:var(--primary);--bs-btn-hover-bg:#004CE0;--bs-btn-hover-border-color:#004CE0;}
+
 </style>
 </head>
 
@@ -322,7 +442,9 @@ hr.sep{border:none;border-top:1px solid rgba(15,23,42,.08);margin:12px 0}
       </div>
       <div style="margin-top:8px;display:grid;gap:8px">
         <select class="select" id="roleSel" style="width:100%">
+          <option value="admin">Админ</option>
           <option value="manager">Менеджер (продажи)</option>
+          <option value="viewer">Вьюер</option>
           <option value="partner">Менеджер (партнеры)</option>
           <option value="head">Директор</option>
           <option value="phead">Директор партнерских</option>
@@ -510,6 +632,9 @@ hr.sep{border:none;border-top:1px solid rgba(15,23,42,.08);margin:12px 0}
           <button class="tab" data-tab="ai">ИИ / синк</button>
           <button class="tab" data-tab="kp">КП / прайс</button>
           <button class="tab" data-tab="users">Пользователи</button>
+          <button class="tab" data-tab="funnel">Воронка</button>
+          <button class="tab" data-tab="companyFields">Карточка компании</button>
+          <button class="tab" data-tab="dealFields">Карточка сделки</button>
         </div>
 
         <div id="admin-media" class="admPane" style="margin-top:12px">
@@ -734,52 +859,227 @@ hr.sep{border:none;border-top:1px solid rgba(15,23,42,.08);margin:12px 0}
           </div>
         </div>
 
+        
         <div id="admin-users" class="admPane" style="margin-top:12px;display:none">
           <div class="grid2">
             <div class="box2">
-              <h5>Роли</h5>
-              <div class="small">MVP‑модель доступов под твой кейс (3+3+2 дир + гости)</div>
-              <div style="margin-top:10px;overflow:auto">
-                <table class="table">
-                  <thead><tr><th>Роль</th><th>Права</th></tr></thead>
-                  <tbody>
-                    <tr><td><b>Менеджер</b></td><td>свои сделки, свои компании, задачи, заметки</td></tr>
-                    <tr><td><b>Партнер‑менеджер</b></td><td>свои партнерские сделки, КП «партнерский вид»</td></tr>
-                    <tr><td><b>Директор</b></td><td>все сделки, скидки руководителя, аналитика, админ</td></tr>
-                    <tr><td><b>Директор партнерских</b></td><td>все партнерские сделки, аналитика партнеров, админ (огр.)</td></tr>
-                    <tr><td><b>Гость</b></td><td>только просмотр (без контактов при режиме комплаенс)</td></tr>
-                  </tbody>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+                <div>
+                  <h5 style="margin:0">Пользователи</h5>
+                  <div class="small">Список пользователей пространства + назначение роли</div>
+                </div>
+                <button class="btn small" id="btnAddUser">Добавить пользователя</button>
+              </div>
+
+              <div style="margin-top:12px;overflow:auto">
+                <table class="table" id="adminUsersTable">
+                  <thead>
+                    <tr>
+                      <th>Имя</th>
+                      <th>Роль</th>
+                      <th>Email (опц.)</th>
+                      <th style="width:44px"></th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
                 </table>
+              </div>
+
+              <div class="actions" style="margin-top:12px">
+                <button class="btn secondary" id="adminUsersSave">Сохранить</button>
+                <div class="small" id="adminUsersHint"></div>
               </div>
             </div>
 
             <div class="box2">
-              <h5>Пользователи</h5>
-              <div class="small">В прототипе — список и загрузка демо‑структуры</div>
-              <div class="form">
-                <div class="field">
-                  <label>Добавить (имя)</label>
-                  <input class="input" id="userName" placeholder="например: Иван / Ольга"/>
-                </div>
-                <div class="field">
-                  <label>Роль</label>
-                  <select class="select" id="userRole" style="width:100%">
-                    <option value="manager">Менеджер</option>
-                    <option value="partner">Партнер‑менеджер</option>
-                    <option value="head">Директор</option>
-                    <option value="phead">Директор партнерских</option>
-                    <option value="guest">Гость</option>
-                  </select>
-                </div>
-                <div style="display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap">
-                  <button class="btn secondary" id="userAdd">Добавить</button>
-                  <button class="btn" id="usersSave">Сохранить</button>
-                </div>
-                <div class="small" id="usersHint"></div>
+              <h5>Роли и доступы</h5>
+              <div class="small">Редактируй таблицу доступов для выбранной роли (чтение / создание / редактирование)</div>
+
+              <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+                <select class="select" id="roleSelectForPerms" style="height:36px;min-width:220px"></select>
+                <button class="btn small secondary" id="btnAddRole">Добавить роль</button>
+                <button class="btn small ghost" id="btnDeleteRole">Удалить роль</button>
+              </div>
+
+              <div style="margin-top:12px;overflow:auto">
+                <table class="table" id="permTable">
+                  <thead>
+                    <tr>
+                      <th>Раздел</th>
+                      <th>Чтение</th>
+                      <th>Создание</th>
+                      <th>Редактирование</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+
+              <div class="actions" style="margin-top:12px">
+                <button class="btn secondary" id="rolesSave">Сохранить</button>
+                <div class="small" id="rolesHint"></div>
+              </div>
+
+              <div class="hintBox" style="margin-top:12px">
+                Демо‑права влияют на UI: «Админ» видит раздел Админ и может менять воронку/поля. «Вьюер» — только просмотр.
               </div>
             </div>
           </div>
         </div>
+
+        <div id="admin-funnel" class="admPane" style="margin-top:12px;display:none">
+          <div class="grid2">
+            <div class="box2">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+                <div>
+                  <h5 style="margin:0">Воронка</h5>
+                  <div class="small">Этапы: название, порядок, цвет, «финальный этап»</div>
+                </div>
+                <div style="display:flex;gap:10px;flex-wrap:wrap">
+                  <button class="btn small" id="btnAddStage">Добавить этап</button>
+                  <button class="btn small secondary" id="btnExportStages">Экспорт</button>
+                  <label class="btn small ghost" for="stagesImportFile" style="cursor:pointer">Импорт</label>
+                  <input type="file" id="stagesImportFile" accept="application/json" style="display:none"/>
+                </div>
+              </div>
+
+              <div style="margin-top:12px;overflow:auto">
+                <table class="table" id="stagesTable">
+                  <thead>
+                    <tr>
+                      <th style="width:64px">#</th>
+                      <th>Название</th>
+                      <th style="width:120px">Цвет</th>
+                      <th style="width:120px">Финальный</th>
+                      <th style="width:160px">Порядок</th>
+                      <th style="width:44px"></th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+
+              <div class="actions" style="margin-top:12px">
+                <button class="btn secondary" id="stagesSave">Сохранить</button>
+                <div class="small" id="stagesHint"></div>
+              </div>
+            </div>
+
+            <div class="box2">
+              <h5>Подсказка</h5>
+              <div class="small" style="line-height:1.5">
+                Этапы задают колонки в Kanban и расчёт в аналитике. После изменения нажми «Сохранить» — воронка перестроится.
+              </div>
+              <div class="divider"></div>
+              <div class="hintBox">
+                Экспорт/импорт — это JSON‑шаблон этапов. Удобно переносить конфигурацию между пространствами.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="admin-companyFields" class="admPane" style="margin-top:12px;display:none">
+          <div class="grid2">
+            <div class="box2">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+                <div>
+                  <h5 style="margin:0">Карточка компании</h5>
+                  <div class="small">Конструктор полей (видимость / обязательность / сортировка)</div>
+                </div>
+                <button class="btn small" id="btnAddCompanyField">Добавить поле</button>
+              </div>
+
+              <div style="margin-top:12px;overflow:auto">
+                <table class="table" id="companyFieldsTable">
+                  <thead>
+                    <tr>
+                      <th>Название поля (ключ)</th>
+                      <th>Лейбл</th>
+                      <th>Тип</th>
+                      <th>Обязательное</th>
+                      <th>Видимое</th>
+                      <th>Сортировка</th>
+                      <th>Опции (для выбора)</th>
+                      <th style="width:44px"></th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+
+              <div class="actions" style="margin-top:12px">
+                <button class="btn secondary" id="companyFieldsSave">Сохранить</button>
+                <div class="small" id="companyFieldsHint"></div>
+              </div>
+            </div>
+
+            <div class="box2">
+              <h5>Опции для «выбор из списка»</h5>
+              <div class="small">Для полей типа «выбор» укажи варианты через запятую</div>
+              <div class="form" style="margin-top:10px">
+                <div class="field">
+                  <label>Подсказка</label>
+                  <div class="input" style="height:auto">
+                    Пример: <b>SMB, Mid, ENT</b> или <b>Менеджер, Партнёр, Тендер</b>
+                  </div>
+                </div>
+              </div>
+              <div class="hintBox">
+                Поля применяются в «Редактировать» в карточке сделки/компании.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="admin-dealFields" class="admPane" style="margin-top:12px;display:none">
+          <div class="grid2">
+            <div class="box2">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+                <div>
+                  <h5 style="margin:0">Карточка сделки</h5>
+                  <div class="small">Конструктор полей (пример: Регистрация до даты, Вид деятельности, Канал продаж…)</div>
+                </div>
+                <button class="btn small" id="btnAddDealField">Добавить поле</button>
+              </div>
+
+              <div style="margin-top:12px;overflow:auto">
+                <table class="table" id="dealFieldsTable">
+                  <thead>
+                    <tr>
+                      <th>Название поля (ключ)</th>
+                      <th>Лейбл</th>
+                      <th>Тип</th>
+                      <th>Обязательное</th>
+                      <th>Видимое</th>
+                      <th>Сортировка</th>
+                      <th>Опции (для выбора)</th>
+                      <th style="width:44px"></th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+
+              <div class="actions" style="margin-top:12px">
+                <button class="btn secondary" id="dealFieldsSave">Сохранить</button>
+                <div class="small" id="dealFieldsHint"></div>
+              </div>
+            </div>
+
+            <div class="box2">
+              <h5>Важно</h5>
+              <div class="small" style="line-height:1.5">
+                Пока прототип хранит настройки и данные в <b>LocalStorage</b>. Когда подключим сервер/БД — эти таблицы лягут в коллекции
+                <code>settings_roles</code>, <code>settings_fields</code>, <code>settings_funnels</code> (из структуры БД).
+              </div>
+              <div class="divider"></div>
+              <div class="hintBox">
+                Если поле «обязательное», при сохранении редактирования будет подсказка и сохранение не пройдёт.
+              </div>
+            </div>
+          </div>
+        </div>
+
 
       </div>
     </section>
@@ -834,7 +1134,31 @@ hr.sep{border:none;border-top:1px solid rgba(15,23,42,.08);margin:12px 0}
             </div>
           </div>
 
-          <div id="m-timeline" style="margin-top:12px;display:none">
+          
+            <div class="box2" id="mEditPanel" style="margin-top:12px;display:none">
+              <h5>Редактирование</h5>
+              <div class="small">Поля управляются в Админ → Карточка компании / сделки</div>
+              <div class="divider"></div>
+
+              <div class="grid2">
+                <div>
+                  <div style="font-weight:800;margin-bottom:8px">Сделка</div>
+                  <div class="form" id="mDealFieldsForm"></div>
+                </div>
+                <div>
+                  <div style="font-weight:800;margin-bottom:8px">Компания</div>
+                  <div class="form" id="mCompanyFieldsForm"></div>
+                </div>
+              </div>
+
+              <div class="actions" style="margin-top:12px">
+                <button class="btn secondary" id="mEditSave">Сохранить</button>
+                <button class="btn ghost" id="mEditCancel">Отмена</button>
+                <div class="small" id="mEditHint"></div>
+              </div>
+            </div>
+
+<div id="m-timeline" style="margin-top:12px;display:none">
             <div class="box2">
               <h5>Client Timeline</h5>
               <div class="small">События из: медиа · тендеров · звонков · КП · задач</div>
@@ -919,14 +1243,101 @@ const LS = {
   ui: "crm_vnext_ui"
 };
 
-const STAGES = [
-  {id:"new",  name:"Новые",         prob:0.15},
-  {id:"qual", name:"Квалификация",  prob:0.30},
-  {id:"prop", name:"КП/Предложение",prob:0.50},
-  {id:"nego", name:"Переговоры",    prob:0.70},
-  {id:"won",  name:"Выиграно",      prob:1.00},
-  {id:"lost", name:"Проиграно",     prob:0.00}
+const STAGES_BASE = [
+  {id:"new",  name:"Новые",          prob:0.15, color:"#0f766e", final:false},
+  {id:"qual", name:"Квалификация",   prob:0.30, color:"#0f172a", final:false},
+  {id:"prop", name:"КП/Предложение", prob:0.50, color:"#b45309", final:false},
+  {id:"nego", name:"Переговоры",     prob:0.70, color:"#1d4ed8", final:false},
+  {id:"won",  name:"Выиграно",       prob:1.00, color:"#0f766e", final:true},
+  {id:"lost", name:"Проиграно",      prob:0.00, color:"#b91c1c", final:true}
 ];
+
+function slugStageId(name){
+  const s = (name||"").toLowerCase().trim()
+    .replace(/ё/g,'е')
+    .replace(/[^a-z0-9а-я\s_-]+/g,'')
+    .replace(/\s+/g,'-')
+    .replace(/-+/g,'-')
+    .slice(0,32);
+  return s || uid("st");
+}
+
+function ensureSettingsModel(){
+  // migrate old settings -> new settings model (idempotent)
+  settings = settings || {};
+  settings.media = settings.media || {platforms:["РБК","Коммерсант"], schedule:"1", keywords:"", dropTo:"new"};
+  settings.tender = settings.tender || {platform:"ЕИС (zakupki.gov.ru)", token:"", schedule:"2", keywords:"", score:"0.75"};
+  settings.ai = settings.ai || {enabled:true, key:"", sync:"60", prob:"Комбо: правила + ИИ‑оценка", officialOnly:false, noContacts:false};
+  settings.kp = settings.kp || {currency:"RUB", vat:"22", rules:"", auto:"Стандарт"};
+
+  // Roles & permissions (settings_roles)
+  if(!Array.isArray(settings.roles) || settings.roles.length===0){
+    settings.roles = [
+      {role_name:"Админ",   perms:{pipeline:{r:1,c:1,u:1}, accounts:{r:1,c:1,u:1}, analytics:{r:1,c:0,u:0}, admin:{r:1,c:1,u:1}, kp:{r:1,c:1,u:1}}},
+      {role_name:"Менеджер",perms:{pipeline:{r:1,c:1,u:1}, accounts:{r:1,c:1,u:1}, analytics:{r:1,c:0,u:0}, admin:{r:0,c:0,u:0}, kp:{r:1,c:1,u:1}}},
+      {role_name:"Вьюер",   perms:{pipeline:{r:1,c:0,u:0}, accounts:{r:1,c:0,u:0}, analytics:{r:1,c:0,u:0}, admin:{r:0,c:0,u:0}, kp:{r:0,c:0,u:0}}}
+    ];
+  }
+
+  // Funnel stages (settings_funnels)
+  if(!Array.isArray(settings.funnelStages) || settings.funnelStages.length===0){
+    settings.funnelStages = STAGES_BASE.map((s,i)=>({
+      id:s.id,
+      stage_name:s.name,
+      position:i+1,
+      color:s.color,
+      final:!!s.final,
+      active:true,
+      prob:s.prob
+    }));
+  } else {
+    // normalize
+    settings.funnelStages = settings.funnelStages.map((x,i)=>({
+      id: x.id || slugStageId(x.stage_name),
+      stage_name: x.stage_name || x.name || "Этап",
+      position: Number.isFinite(+x.position) ? +x.position : (i+1),
+      color: x.color || "#0f172a",
+      final: !!x.final,
+      active: x.active!==false,
+      prob: Number.isFinite(+x.prob) ? +x.prob : 0.5
+    }));
+  }
+
+  // Fields (settings_fields) for companies & deals
+  if(!Array.isArray(settings.fields)){
+    settings.fields = [];
+  }
+  if(settings.fields.length===0){
+    settings.fields = [
+      // companies
+      {collection:"companies", field_name:"inn",      label:"ИНН",         field_type:"text",  visible:true, required:false, options:null, order:1},
+      {collection:"companies", field_name:"industry", label:"Вид деятельности", field_type:"text", visible:true, required:false, options:null, order:2},
+      {collection:"companies", field_name:"segment",  label:"Сегмент",     field_type:"select",visible:true, required:false, options:["SMB","Mid","ENT"], order:3},
+      // deals (пример — можно редактировать в Админке)
+      {collection:"deals", field_name:"reg_before", label:"Регистрация до даты", field_type:"date", visible:true, required:false, options:null, order:1},
+      {collection:"deals", field_name:"activity",   label:"Вид деятельности",   field_type:"text", visible:true, required:false, options:null, order:2},
+      {collection:"deals", field_name:"sales_channel", label:"Канал продаж",    field_type:"select", visible:true, required:false, options:["Менеджер","Партнёр","Тендер","Медиа"], order:3}
+    ];
+  }
+
+  save(LS.settings, settings);
+}
+
+let CURRENT_STAGES = [];
+let STAGE_BY_ID = {};
+function refreshStages(){
+  const list = (settings.funnelStages||[]).filter(s=>s.active!==false).sort((a,b)=>(a.position||0)-(b.position||0));
+  CURRENT_STAGES = list.map((s,i)=>({
+    id: s.id || slugStageId(s.stage_name),
+    name: s.stage_name,
+    prob: Number.isFinite(+s.prob) ? +s.prob : 0.5,
+    color: s.color || "#0f172a",
+    final: !!s.final,
+    position: s.position || (i+1)
+  }));
+  STAGE_BY_ID = Object.fromEntries(CURRENT_STAGES.map(s=>[s.id,s]));
+}
+
 
 const OWNERS_DEFAULT = [
   {id:"m1", name:"Менеджер 1", role:"manager"},
@@ -982,11 +1393,12 @@ let settings = load(LS.settings, {
   media:{platforms:["РБК","Коммерсант"], schedule:"1", keywords:"ИТ‑инвентаризация | discovery | asset management\nтендер | закупка | конкурс", dropTo:"new"},
   tender:{platform:"ЕИС (zakupki.gov.ru)", token:"", schedule:"2", keywords:"ITAM | инвентаризация | учет активов\nCMDB | конфигурационная база", score:"0.75"},
   ai:{enabled:true, key:"", sync:"60", prob:"Комбо: правила + ИИ‑оценка", officialOnly:false, noContacts:false},
-  kp:{currency:"RUB", vat:"20", rules:"Партнерская скидка: по согласованию\nСкидка руководителя: только директор", auto:"Стандарт"}
+  kp:{currency:"RUB", vat:"22", rules:"Партнерская скидка: по согласованию\nСкидка руководителя: только директор", auto:"Стандарт"}
 });
 let uiState = load(LS.ui, {role:"manager", officialOnly:false, noContacts:false, syncMin:60, timelineOn:true, relmapOn:true, aiOn:true});
 
-const STAGE_BY_ID = Object.fromEntries(STAGES.map(s=>[s.id,s]));
+ensureSettingsModel();
+refreshStages();
 
 /** ------------------------------
  *  Navigation
@@ -1097,7 +1509,7 @@ function renderBoard(){
   calcKPIs(filtered);
 
   board.innerHTML="";
-  STAGES.forEach(st=>{
+  CURRENT_STAGES.forEach(st=>{
     const col = document.createElement("div");
     col.className="col";
     col.dataset.stage = st.id;
@@ -1224,15 +1636,15 @@ function renderAnalytics(){
   const list = applyFilters(deals);
 
   funnelBody.innerHTML="";
-  for(let i=0;i<STAGES.length;i++){
-    const st = STAGES[i];
+  for(let i=0;i<CURRENT_STAGES.length;i++){
+    const st = CURRENT_STAGES[i];
     const items = list.filter(d=>d.stage===st.id);
     const cnt = items.length;
     const sum = items.reduce((a,d)=>a+d.amount,0);
     const avgP = cnt ? items.reduce((a,d)=>a+(d.prob ?? STAGE_BY_ID[d.stage].prob),0)/cnt : 0;
     let conv = "—";
-    if(i < STAGES.length-1){
-      const next = STAGES[i+1].id;
+    if(i < CURRENT_STAGES.length-1){
+      const next = CURRENT_CURRENT_STAGES[i+1].id;
       const nextCnt = list.filter(d=>d.stage===next).length;
       conv = cnt ? Math.round((nextCnt / cnt)*100) + "%" : "—";
     }
@@ -1295,7 +1707,433 @@ function syncAdminUI(){
   document.getElementById("vat").value = settings.kp.vat;
   document.getElementById("kpRules").value = settings.kp.rules;
   document.getElementById("kpAuto").value = settings.kp.auto;
+
+  // Admin custom (users / roles / funnels / fields)
+  renderAdminAll();
 }
+
+
+/** ------------------------------
+ *  Admin: Users / Roles / Funnel / Fields
+ *  ------------------------------ */
+function normalizeUsers(){
+  const roleMap = {
+    admin:"Админ",
+    head:"Админ",
+    phead:"Админ",
+    manager:"Менеджер",
+    partner:"Менеджер",
+    guest:"Вьюер",
+    viewer:"Вьюер"
+  };
+  users = (users||[]).map(u=>({
+    id: u.id || uid("u"),
+    name: u.name || "Пользователь",
+    role: roleMap[u.role] || u.role || "Менеджер",
+    email: u.email || ""
+  }));
+  save(LS.users, users);
+}
+
+function getRoleNames(){ return (settings.roles||[]).map(r=>r.role_name); }
+
+const PERM_SECTIONS = [
+  {id:"pipeline", label:"Воронка"},
+  {id:"accounts", label:"Компании"},
+  {id:"analytics",label:"Аналитика"},
+  {id:"kp",       label:"КП / прайс"},
+  {id:"admin",    label:"Админ"}
+];
+
+function roleByName(name){
+  return (settings.roles||[]).find(r=>r.role_name===name) || null;
+}
+
+function renderRoleSelect(){
+  const sel = document.getElementById("roleSelectForPerms");
+  if(!sel) return;
+  sel.innerHTML = "";
+  (settings.roles||[]).forEach(r=>{
+    const o = document.createElement("option");
+    o.value = r.role_name;
+    o.textContent = r.role_name;
+    sel.appendChild(o);
+  });
+  if(!sel.value && sel.options.length) sel.value = sel.options[0].value;
+}
+
+function renderPermTable(){
+  const sel = document.getElementById("roleSelectForPerms");
+  const body = document.querySelector("#permTable tbody");
+  if(!sel || !body) return;
+  const role = roleByName(sel.value);
+  if(!role) return;
+  role.perms = role.perms || {};
+  body.innerHTML = "";
+
+  PERM_SECTIONS.forEach(sec=>{
+    role.perms[sec.id] = role.perms[sec.id] || {r:0,c:0,u:0};
+    const p = role.perms[sec.id];
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><b>${escapeHtml(sec.label)}</b></td>
+      <td><input type="checkbox" ${p.r? "checked":""} data-sec="${sec.id}" data-act="r"/></td>
+      <td><input type="checkbox" ${p.c? "checked":""} data-sec="${sec.id}" data-act="c"/></td>
+      <td><input type="checkbox" ${p.u? "checked":""} data-sec="${sec.id}" data-act="u"/></td>
+    `;
+    body.appendChild(tr);
+  });
+
+  body.querySelectorAll("input[type=checkbox]").forEach(ch=>{
+    ch.addEventListener("change", ()=>{
+      const sec = ch.dataset.sec;
+      const act = ch.dataset.act;
+      role.perms[sec] = role.perms[sec] || {r:0,c:0,u:0};
+      role.perms[sec][act] = ch.checked ? 1 : 0;
+      document.getElementById("rolesHint").textContent = "Есть несохранённые изменения";
+    });
+  });
+}
+
+function renderAdminUsers(){
+  const body = document.querySelector("#adminUsersTable tbody");
+  if(!body) return;
+  body.innerHTML = "";
+  const roles = getRoleNames();
+
+  users.forEach(u=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><input class="input" style="height:34px" value="${escapeHtml(u.name)}" data-id="${u.id}" data-k="name"/></td>
+      <td>
+        <select class="select" style="height:34px" data-id="${u.id}" data-k="role">
+          ${roles.map(r=>`<option ${u.role===r?"selected":""}>${escapeHtml(r)}</option>`).join("")}
+        </select>
+      </td>
+      <td><input class="input" style="height:34px" value="${escapeHtml(u.email||"")}" placeholder="name@company.ru" data-id="${u.id}" data-k="email"/></td>
+      <td><button class="btn small ghost" data-del="${u.id}">✕</button></td>
+    `;
+    body.appendChild(tr);
+  });
+
+  body.querySelectorAll("[data-k]").forEach(el=>{
+    el.addEventListener("change", ()=>{
+      const id = el.dataset.id;
+      const k = el.dataset.k;
+      const u = users.find(x=>x.id===id);
+      if(!u) return;
+      u[k] = el.value;
+      document.getElementById("adminUsersHint").textContent = "Есть несохранённые изменения";
+    });
+  });
+
+  body.querySelectorAll("[data-del]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const id = btn.dataset.del;
+      users = users.filter(x=>x.id!==id);
+      renderAdminUsers();
+      document.getElementById("adminUsersHint").textContent = "Пользователь удалён (не забудь сохранить)";
+    });
+  });
+}
+
+function renderStagesAdmin(){
+  const body = document.querySelector("#stagesTable tbody");
+  if(!body) return;
+  const list = (settings.funnelStages||[]).slice().sort((a,b)=>(a.position||0)-(b.position||0));
+  body.innerHTML = "";
+
+  list.forEach((st, idx)=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${idx+1}</td>
+      <td><input class="input" style="height:34px" value="${escapeHtml(st.stage_name||"")}" data-id="${st.id}" data-k="stage_name"/></td>
+      <td><input class="input" type="color" value="${escapeHtml(st.color||"#0f172a")}" data-id="${st.id}" data-k="color" style="height:34px;padding:0 6px"/></td>
+      <td style="text-align:center"><input type="checkbox" ${st.final? "checked":""} data-id="${st.id}" data-k="final"/></td>
+      <td>
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+          <button class="btn small ghost" data-move="up" data-id="${st.id}">↑</button>
+          <button class="btn small ghost" data-move="down" data-id="${st.id}">↓</button>
+          <span class="muted">позиция ${st.position||idx+1}</span>
+        </div>
+      </td>
+      <td><button class="btn small ghost" data-del="${st.id}">✕</button></td>
+    `;
+    body.appendChild(tr);
+  });
+
+  function setDirty(msg){ const el=document.getElementById("stagesHint"); if(el) el.textContent=msg; }
+
+  body.querySelectorAll("[data-k]").forEach(el=>{
+    el.addEventListener("change", ()=>{
+      const id = el.dataset.id;
+      const k = el.dataset.k;
+      const st = settings.funnelStages.find(x=>x.id===id);
+      if(!st) return;
+      st[k] = (el.type==="checkbox") ? el.checked : el.value;
+      setDirty("Есть несохранённые изменения");
+    });
+  });
+
+  body.querySelectorAll("[data-move]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const id = btn.dataset.id;
+      const dir = btn.dataset.move;
+      const arr = settings.funnelStages.slice().sort((a,b)=>(a.position||0)-(b.position||0));
+      const i = arr.findIndex(x=>x.id===id);
+      const j = dir==="up" ? i-1 : i+1;
+      if(i<0 || j<0 || j>=arr.length) return;
+      const a = arr[i], b = arr[j];
+      const tmp = a.position; a.position = b.position; b.position = tmp;
+      settings.funnelStages = arr;
+      renderStagesAdmin();
+      setDirty("Порядок изменён");
+    });
+  });
+
+  body.querySelectorAll("[data-del]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const id = btn.dataset.del;
+      settings.funnelStages = (settings.funnelStages||[]).filter(x=>x.id!==id);
+      renderStagesAdmin();
+      setDirty("Этап удалён (не забудь сохранить)");
+    });
+  });
+}
+
+function downloadJson(filename, obj){
+  const blob = new Blob([JSON.stringify(obj,null,2)], {type:"application/json;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 3000);
+}
+
+function renderFieldsAdmin(collection, tableId){
+  const body = document.querySelector(`#${tableId} tbody`);
+  if(!body) return;
+  const defs = getFieldDefs(collection);
+  body.innerHTML = "";
+
+  defs.forEach(def=>{
+    const opts = Array.isArray(def.options) ? def.options.join(", ") : (def.options||"");
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><input class="input" style="height:34px" value="${escapeHtml(def.field_name)}" data-col="${collection}" data-key="${def.field_name}" data-k="field_name"/></td>
+      <td><input class="input" style="height:34px" value="${escapeHtml(def.label)}" data-col="${collection}" data-key="${def.field_name}" data-k="label"/></td>
+      <td>
+        <select class="select" style="height:34px" data-col="${collection}" data-key="${def.field_name}" data-k="field_type">
+          ${["text","date","number","email","select"].map(t=>`<option value="${t}" ${def.field_type===t?"selected":""}>${t}</option>`).join("")}
+        </select>
+      </td>
+      <td style="text-align:center"><input type="checkbox" ${def.required?"checked":""} data-col="${collection}" data-key="${def.field_name}" data-k="required"/></td>
+      <td style="text-align:center"><input type="checkbox" ${def.visible?"checked":""} data-col="${collection}" data-key="${def.field_name}" data-k="visible"/></td>
+      <td><input class="input" type="number" style="height:34px;width:110px" value="${def.order}" data-col="${collection}" data-key="${def.field_name}" data-k="order"/></td>
+      <td><input class="input" style="height:34px" value="${escapeHtml(opts)}" placeholder="a,b,c" data-col="${collection}" data-key="${def.field_name}" data-k="options"/></td>
+      <td><button class="btn small ghost" data-del-field="${collection}" data-key="${escapeHtml(def.field_name)}">✕</button></td>
+    `;
+    body.appendChild(tr);
+  });
+
+  function updateDef(fieldName, patch){
+    const arr = settings.fields || [];
+    const ix = arr.findIndex(f=>f.collection===collection && f.field_name===fieldName);
+    if(ix<0) return;
+    arr[ix] = {...arr[ix], ...patch};
+    settings.fields = arr;
+  }
+
+  body.querySelectorAll("[data-k]").forEach(el=>{
+    el.addEventListener("change", ()=>{
+      const key = el.dataset.key;
+      const k = el.dataset.k;
+      let v;
+      if(el.type==="checkbox") v = el.checked;
+      else if(k==="order") v = Number(el.value||0);
+      else if(k==="options"){
+        v = el.value.trim()==="" ? null : el.value.split(",").map(x=>x.trim()).filter(Boolean);
+      } else v = el.value;
+      updateDef(key, {[k]:v});
+      const hintId = collection==="companies" ? "companyFieldsHint" : "dealFieldsHint";
+      const h = document.getElementById(hintId); if(h) h.textContent = "Есть несохранённые изменения";
+    });
+  });
+
+  body.querySelectorAll("[data-del-field]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const key = btn.dataset.key;
+      settings.fields = (settings.fields||[]).filter(f=>!(f.collection===collection && f.field_name===key));
+      renderFieldsAdmin(collection, tableId);
+      const hintId = collection==="companies" ? "companyFieldsHint" : "dealFieldsHint";
+      const h = document.getElementById(hintId); if(h) h.textContent = "Поле удалено (не забудь сохранить)";
+    });
+  });
+}
+
+function addField(collection){
+  const field_name = (prompt("Ключ поля (латиница/цифры/_)","new_field")||"").trim();
+  if(!field_name) return;
+  const label = (prompt("Лейбл (как показываем в UI)", field_name)||field_name).trim();
+  const type = (prompt("Тип: text/date/number/email/select","text")||"text").trim();
+  const required = confirm("Сделать обязательным?");
+  const visible = true;
+  const order = (getFieldDefs(collection).slice(-1)[0]?.order || 0) + 1;
+  const options = type==="select" ? (prompt("Опции (через запятую)","A,B,C")||"").split(",").map(x=>x.trim()).filter(Boolean) : null;
+  settings.fields = settings.fields || [];
+  settings.fields.push({collection, field_name, label, field_type:type, visible, required, options, order});
+}
+
+function renderAdminAll(){
+  normalizeUsers();
+  renderRoleSelect();
+  renderPermTable();
+  renderAdminUsers();
+  renderStagesAdmin();
+  renderFieldsAdmin("companies","companyFieldsTable");
+  renderFieldsAdmin("deals","dealFieldsTable");
+}
+
+// bindings
+document.getElementById("btnAddUser").addEventListener("click", ()=>{
+  const name = (prompt("Имя пользователя","")||"").trim();
+  if(!name){ toast("Имя обязательно"); return; }
+  const email = (prompt("Email (опционально)","")||"").trim();
+  const roles = getRoleNames();
+  const role = (prompt("Роль: "+roles.join(" / "), roles[0]||"Менеджер")||roles[0]||"Менеджер").trim();
+  users.push({id:uid("u"), name, role: roles.includes(role)?role:(roles[0]||"Менеджер"), email});
+  renderAdminUsers();
+  document.getElementById("adminUsersHint").textContent = "Добавлен: " + name + " (не забудь сохранить)";
+});
+
+document.getElementById("adminUsersSave").addEventListener("click", ()=>{
+  save(LS.users, users);
+  ownersForFilter();
+  toast("Пользователи сохранены");
+  document.getElementById("adminUsersHint").textContent = "Сохранено";
+  renderAll();
+});
+
+document.getElementById("roleSelectForPerms").addEventListener("change", renderPermTable);
+
+document.getElementById("btnAddRole").addEventListener("click", ()=>{
+  const name = (prompt("Название роли","Новая роль")||"").trim();
+  if(!name) return;
+  settings.roles = settings.roles || [];
+  if(settings.roles.some(r=>r.role_name===name)){ toast("Такая роль уже есть"); return; }
+  settings.roles.push({role_name:name, perms:{pipeline:{r:1,c:0,u:0}, accounts:{r:1,c:0,u:0}, analytics:{r:1,c:0,u:0}, kp:{r:0,c:0,u:0}, admin:{r:0,c:0,u:0}}});
+  save(LS.settings, settings);
+  renderRoleSelect();
+  document.getElementById("roleSelectForPerms").value = name;
+  renderPermTable();
+  renderAdminUsers();
+  toast("Роль добавлена");
+});
+
+document.getElementById("btnDeleteRole").addEventListener("click", ()=>{
+  const sel = document.getElementById("roleSelectForPerms");
+  if(!sel || !sel.value) return;
+  const name = sel.value;
+  if(["Админ","Менеджер","Вьюер"].includes(name)){ toast("Базовые роли удалять нельзя"); return; }
+  if(!confirm("Удалить роль '"+name+"'?")) return;
+  settings.roles = (settings.roles||[]).filter(r=>r.role_name!==name);
+  // migrate users with deleted role -> Менеджер
+  users.forEach(u=>{ if(u.role===name) u.role="Менеджер"; });
+  save(LS.settings, settings); save(LS.users, users);
+  renderRoleSelect(); renderPermTable(); renderAdminUsers();
+  toast("Роль удалена");
+});
+
+document.getElementById("rolesSave").addEventListener("click", ()=>{
+  save(LS.settings, settings);
+  document.getElementById("rolesHint").textContent = "Сохранено";
+  toast("Роли сохранены");
+});
+
+document.getElementById("btnAddStage").addEventListener("click", ()=>{
+  const name = (prompt("Название этапа","Новый этап")||"").trim();
+  if(!name) return;
+  const id = slugStageId(name);
+  const color = prompt("Цвет (#rrggbb)","#+0f172a".replace("+","")) || "#0f172a";
+  const final = confirm("Этот этап финальный?");
+  const maxPos = Math.max(0, ...((settings.funnelStages||[]).map(s=>+s.position||0)));
+  settings.funnelStages = settings.funnelStages || [];
+  settings.funnelStages.push({id, stage_name:name, position:maxPos+1, color, final, active:true, prob:0.5});
+  renderStagesAdmin();
+  document.getElementById("stagesHint").textContent = "Этап добавлен (не забудь сохранить)";
+});
+
+document.getElementById("btnExportStages").addEventListener("click", ()=>{
+  const tpl = (settings.funnelStages||[]).slice().sort((a,b)=>(a.position||0)-(b.position||0))
+    .map(s=>({stage_name:s.stage_name, position:s.position, color:s.color, final:!!s.final, active:s.active!==false}));
+  downloadJson("funnel-stages.json", tpl);
+  toast("Экспортировано");
+});
+
+document.getElementById("stagesImportFile").addEventListener("change", (e)=>{
+  const f = e.target.files && e.target.files[0];
+  if(!f) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    try{
+      const arr = JSON.parse(String(reader.result||"[]"));
+      if(!Array.isArray(arr)) throw new Error("not array");
+      settings.funnelStages = arr.map((s,i)=>({
+        id: s.id || slugStageId(s.stage_name),
+        stage_name: s.stage_name || "Этап",
+        position: Number.isFinite(+s.position) ? +s.position : (i+1),
+        color: s.color || "#0f172a",
+        final: !!s.final,
+        active: s.active!==false,
+        prob: Number.isFinite(+s.prob) ? +s.prob : 0.5
+      }));
+      renderStagesAdmin();
+      document.getElementById("stagesHint").textContent = "Импортировано (не забудь сохранить)";
+      toast("Импорт завершён");
+    }catch(err){
+      toast("Ошибка импорта");
+    }finally{
+      e.target.value = "";
+    }
+  };
+  reader.readAsText(f);
+});
+
+document.getElementById("stagesSave").addEventListener("click", ()=>{
+  // normalize positions
+  const arr = (settings.funnelStages||[]).slice().sort((a,b)=>(a.position||0)-(b.position||0));
+  arr.forEach((s,i)=>s.position=i+1);
+  settings.funnelStages = arr;
+  save(LS.settings, settings);
+  refreshStages();
+  renderAll();
+  document.getElementById("stagesHint").textContent = "Сохранено";
+  toast("Воронка сохранена");
+});
+
+document.getElementById("btnAddCompanyField").addEventListener("click", ()=>{
+  addField("companies");
+  renderFieldsAdmin("companies","companyFieldsTable");
+  document.getElementById("companyFieldsHint").textContent = "Поле добавлено (не забудь сохранить)";
+});
+
+document.getElementById("btnAddDealField").addEventListener("click", ()=>{
+  addField("deals");
+  renderFieldsAdmin("deals","dealFieldsTable");
+  document.getElementById("dealFieldsHint").textContent = "Поле добавлено (не забудь сохранить)";
+});
+
+document.getElementById("companyFieldsSave").addEventListener("click", ()=>{
+  save(LS.settings, settings);
+  document.getElementById("companyFieldsHint").textContent = "Сохранено";
+  toast("Поля компании сохранены");
+});
+
+document.getElementById("dealFieldsSave").addEventListener("click", ()=>{
+  save(LS.settings, settings);
+  document.getElementById("dealFieldsHint").textContent = "Сохранено";
+  toast("Поля сделки сохранены");
+});
 
 /** ------------------------------
  *  Save admin
@@ -1361,22 +2199,7 @@ document.getElementById("kpSave").addEventListener("click", ()=>{
   toast("Настройки КП сохранены");
 });
 
-document.getElementById("userAdd").addEventListener("click", ()=>{
-  const name = (document.getElementById("userName").value||"").trim();
-  const role = document.getElementById("userRole").value;
-  if(!name){ toast("Укажи имя"); return; }
-  users.push({id:uid("u"), name, role});
-  save(LS.users, users);
-  ownersForFilter();
-  document.getElementById("userName").value="";
-  document.getElementById("usersHint").textContent = "Добавлен: "+name;
-  renderAll();
-});
-document.getElementById("usersSave").addEventListener("click", ()=>{
-  save(LS.users, users);
-  ownersForFilter();
-  toast("Пользователи сохранены");
-});
+/* users admin migrated to new admin UI */
 
 document.getElementById("mediaTest").addEventListener("click", ()=>toast("Тест‑прогон: в прототипе заглушка (на VM подключим)"));
 document.getElementById("tenderTest").addEventListener("click", ()=>toast("Тест‑прогон: в прототипе заглушка (на VM подключим)"));
@@ -1389,13 +2212,29 @@ const roleSel = document.getElementById("roleSel");
 const roleBadge = document.getElementById("roleBadge");
 roleSel.value = uiState.role;
 function roleName(v){
-  return ({manager:"Менеджер",partner:"Партнер",head:"Директор",phead:"Дир. партнерских",guest:"Гость"})[v] || v;
+  return ({admin:"Админ",manager:"Менеджер",viewer:"Вьюер",partner:"Партнер",head:"Директор",phead:"Дир. партнерских",guest:"Гость"})[v] || v;
 }
 function syncRole(){
   uiState.role = roleSel.value;
   roleBadge.textContent = roleName(uiState.role);
   save(LS.ui, uiState);
+  applyUiAccess();
 }
+
+function canSeeAdmin(){
+  return ["admin","head","phead"].includes(uiState.role);
+}
+function applyUiAccess(){
+  const adminBtn = document.querySelector('.navbtn[data-go="admin"]');
+  if(adminBtn) adminBtn.style.display = canSeeAdmin() ? "" : "none";
+  if(!canSeeAdmin()){
+    // if user is not admin — force to deals if admin page is open
+    const sec = document.getElementById("sec-admin");
+    if(sec && sec.classList.contains("active")) go("deals");
+  }
+}
+applyUiAccess();
+
 roleSel.addEventListener("change", ()=>{ syncRole(); renderAll(); });
 
 const officialOnly = document.getElementById("officialOnly");
@@ -1443,6 +2282,7 @@ function syncIntervalLabel(){
   uiState.syncMin = v;
   syncBadge.textContent = v===1 ? "каждую минуту" : "каждые "+v+" мин";
   save(LS.ui, uiState);
+  applyUiAccess();
 }
 syncInterval.addEventListener("change", syncIntervalLabel);
 syncIntervalLabel();
@@ -1600,25 +2440,146 @@ mDelete.addEventListener("click", ()=>{
   renderAll();
 });
 
-// Edit (simple inline prompt for MVP)
-document.getElementById("mEdit").addEventListener("click", ()=>{
+// Edit (form driven by Admin → fields)
+function getFieldDefs(collection){
+  return (settings.fields||[])
+    .filter(f=>f.collection===collection)
+    .map((f,i)=>({
+      collection,
+      field_name: String(f.field_name||"").trim(),
+      label: String(f.label||f.field_name||"").trim(),
+      field_type: (f.field_type||"text"),
+      visible: f.visible!==false,
+      required: !!f.required,
+      options: f.options,
+      order: Number.isFinite(+f.order) ? +f.order : (i+1)
+    }))
+    .filter(f=>f.field_name)
+    .sort((a,b)=>(a.order||0)-(b.order||0));
+}
+
+function ensureCustom(obj){
+  if(!obj.custom || typeof obj.custom!=="object") obj.custom = {};
+  return obj.custom;
+}
+
+function renderFieldForm(containerId, defs, dataObj){
+  const wrap = document.getElementById(containerId);
+  if(!wrap) return;
+  wrap.innerHTML = "";
+  defs.filter(d=>d.visible!==false).forEach(def=>{
+    const key = def.field_name;
+    const label = def.label || key;
+    const type = def.field_type || "text";
+    const required = !!def.required;
+    const custom = ensureCustom(dataObj);
+    const val = (key in dataObj) ? dataObj[key] : (custom[key] ?? "");
+    const field = document.createElement("div");
+    field.className = "field";
+    const id = containerId + "-" + key;
+    const req = required ? " <span class=\"muted\">(обяз.)</span>" : "";
+    let inputHtml = "";
+    if(type==="select"){
+      const opts = Array.isArray(def.options) ? def.options : (typeof def.options==="string" ? def.options.split(",") : []);
+      inputHtml = `<select class="select" id="${id}" style="height:36px;width:100%">
+        <option value="">—</option>
+        ${opts.map(o=>`<option>${escapeHtml(String(o).trim())}</option>`).join("")}
+      </select>`;
+    } else {
+      const itype = type==="number" ? "number" : type==="date" ? "date" : type==="email" ? "email" : "text";
+      inputHtml = `<input class="input" id="${id}" type="${itype}" value="${escapeHtml(String(val??""))}" style="height:36px"/>`;
+    }
+    field.innerHTML = `<label>${escapeHtml(label)}${req}</label>${inputHtml}`;
+    wrap.appendChild(field);
+
+    // set value for select
+    const el = document.getElementById(id);
+    if(el && type==="select"){
+      el.value = String(val??"");
+    }
+  });
+}
+
+function validateRequired(defs, dataObj){
+  const custom = ensureCustom(dataObj);
+  const errs = [];
+  defs.filter(d=>d.visible!==false).forEach(def=>{
+    if(!def.required) return;
+    const key = def.field_name;
+    const v = (key in dataObj) ? dataObj[key] : (custom[key] ?? "");
+    const empty = v===null || v===undefined || String(v).trim()==="";
+    if(empty) errs.push(def.label || key);
+  });
+  return errs;
+}
+
+function applyFieldForm(containerId, defs, dataObj){
+  const custom = ensureCustom(dataObj);
+  defs.filter(d=>d.visible!==false).forEach(def=>{
+    const key = def.field_name;
+    const id = containerId + "-" + key;
+    const el = document.getElementById(id);
+    if(!el) return;
+    let v = el.value;
+    if(def.field_type==="number"){
+      v = v==="" ? "" : Number(v);
+    }
+    // write into base keys if exist, else custom
+    if(key in dataObj) dataObj[key] = v;
+    else custom[key] = v;
+  });
+}
+
+function openEditPanel(){
   if(!activeDealId) return;
   const d = deals.find(x=>x.id===activeDealId);
   const c = companies.find(x=>x.id===d.companyId);
-  const title = prompt("Название сделки", d.title);
-  if(title!=null) d.title = title;
-  const amt = prompt("Сумма (число)", String(d.amount));
-  if(amt!=null && !isNaN(Number(amt))) d.amount = Number(amt);
-  const stage = prompt("Этап: new/qual/prop/nego/won/lost", d.stage);
-  if(stage!=null && STAGE_BY_ID[stage]) d.stage = stage;
+  if(!d || !c) return;
 
-  const cname = prompt("Компания (название)", c.name);
-  if(cname!=null) c.name = cname;
-  const inn = prompt("ИНН", c.inn||"");
-  if(inn!=null) c.inn = inn;
+  const dealDefs = getFieldDefs("deals");
+  const compDefs = getFieldDefs("companies");
 
-  save(LS.deals, deals); save(LS.companies, companies);
-  toast("Обновлено");
+  renderFieldForm("mDealFieldsForm", dealDefs, d);
+  renderFieldForm("mCompanyFieldsForm", compDefs, c);
+
+  document.getElementById("mEditHint").textContent = "";
+  document.getElementById("mEditPanel").style.display = "block";
+  toast("Редактирование открыто");
+}
+
+function closeEditPanel(){
+  const p = document.getElementById("mEditPanel");
+  if(p) p.style.display = "none";
+}
+
+document.getElementById("mEdit").addEventListener("click", openEditPanel);
+document.getElementById("mEditCancel").addEventListener("click", closeEditPanel);
+
+document.getElementById("mEditSave").addEventListener("click", ()=>{
+  if(!activeDealId) return;
+  const d = deals.find(x=>x.id===activeDealId);
+  const c = companies.find(x=>x.id===d.companyId);
+  if(!d || !c) return;
+
+  const dealDefs = getFieldDefs("deals");
+  const compDefs = getFieldDefs("companies");
+
+  // validate
+  const dErr = validateRequired(dealDefs, d);
+  const cErr = validateRequired(compDefs, c);
+  if(dErr.length || cErr.length){
+    document.getElementById("mEditHint").textContent = "Заполни обязательные поля: " + [...cErr.map(x=>"Компания: "+x), ...dErr.map(x=>"Сделка: "+x)].join(", ");
+    toast("Есть обязательные поля");
+    return;
+  }
+
+  applyFieldForm("mDealFieldsForm", dealDefs, d);
+  applyFieldForm("mCompanyFieldsForm", compDefs, c);
+
+  save(LS.deals, deals);
+  save(LS.companies, companies);
+  toast("Сохранено");
+  closeEditPanel();
   renderAll();
   openDeal(d.id);
 });
@@ -1802,5 +2763,8 @@ function toast(text){
   };
 })();
 </script>
+
+<script src="vendor/bootstrap/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>
