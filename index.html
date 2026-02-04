@@ -4,51 +4,29 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>CRM New Level — vNext (Kanban + Admin)</title>
-
-<link rel="stylesheet" href="vendor/inter/inter.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-
-<link rel="stylesheet" href="vendor/bootstrap/bootstrap.min.css">
-<link rel="stylesheet" href="vendor/bootstrap-icons/bootstrap-icons.css">
-
 <style>
 :root{
-  /* Brand / UI tokens (Light) */
-  --bg:#F8F9FA;
-  --card:#FFFFFF;
-  --border:#E0E0E0;
-  --text:#1F1F1F;
-  --muted:#5A5A5A;
-  --muted2:#A0A0A0;
-
-  --primary:#0057FF;
-  --good:#2EBE5E;
-  --bad:#EF5350;
+  --bg:#f6f7f9;
+  --card:#ffffff;
+  --border:rgba(15,23,42,.10);
+  --text:#0f172a;
+  --muted:#64748b;
+  --muted2:#94a3b8;
+  --shadow:0 1px 0 rgba(15,23,42,.02), 0 12px 30px rgba(15,23,42,.06);
+  --radius:18px;
+  --radius2:14px;
+  --primary:#0f172a;
+  --good:#0f766e;
   --warn:#b45309;
-
-  --chip:rgba(0,87,255,.12);
-  --shadow:0px 2px 6px rgba(0,0,0,0.04);
-
-  --radius:12px;      /* cards */
-  --radius2:8px;      /* buttons */
-  --focus:0 0 0 3px rgba(0,87,255,.20);
-
+  --bad:#b91c1c;
+  --chip:#f1f5f9;
+  --focus:0 0 0 4px rgba(15,23,42,.10);
   --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
-  --sans: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
-
-  /* Bootstrap 5.3 CSS vars override (optional use) */
-  --bs-body-bg: var(--bg);
-  --bs-body-color: var(--text);
-  --bs-border-color: var(--border);
-  --bs-primary: var(--primary);
-  --bs-success: var(--good);
-  --bs-danger: var(--bad);
+  --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
 }
 *{box-sizing:border-box}
 html,body{height:100%}
-body{margin:0;font-family:var(--sans);font-size:14px;line-height:1.5;background:var(--bg);color:var(--text)}
+body{margin:0;font-family:var(--sans);background:var(--bg);color:var(--text)}
 a{color:inherit}
 button,input,select,textarea{font-family:inherit}
 .small{font-size:12px;color:var(--muted)}
@@ -80,7 +58,7 @@ button,input,select,textarea{font-family:inherit}
   width:44px;height:44px;border-radius:16px;background:var(--primary);
   display:grid;place-items:center;color:white;font-weight:900;letter-spacing:-.02em;
 }
-.brand h1{margin:0;font-size:24px;font-weight:600;letter-spacing:-0.005em}
+.brand h1{margin:0;font-size:14px;letter-spacing:-.01em}
 .brand .sub{margin-top:2px;font-size:12px;color:var(--muted)}
 
 .nav{margin-top:14px;display:grid;gap:6px}
@@ -130,22 +108,29 @@ button,input,select,textarea{font-family:inherit}
   display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;
   margin-bottom:14px;
 }
-.title h2{margin:0;font-size:20px;font-weight:500;letter-spacing:-0.002em}
+.title h2{margin:0;font-size:18px;letter-spacing:-.02em}
 .title .meta{margin-top:4px;font-size:12px;color:var(--muted)}
 
 .controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.input, .select{border-radius:8px;border:1px solid #D0D0D0;background:var(--card);height:40px;padding:0 12px;font-size:14px;color:var(--text);outline:none}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);height:40px;padding:0 14px;font-size:14px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;background:var(--primary);color:#fff;outline:none}
+.input, .select, .btn{
+  border-radius:14px;border:1px solid var(--border);
+  background:var(--card);
+  height:40px;
+  padding:0 12px;
+  font-size:13px;
+  color:var(--text);
+  outline:none;
+}
 .input{min-width:250px}
 .select{padding-right:34px}
-.input:focus,.select:focus,.btn:focus{box-shadow:0 0 0 3px rgba(0,87,255,0.25)}
+.input:focus,.select:focus,.btn:focus{box-shadow:var(--focus)}
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:8px;
   cursor:pointer;font-weight:900;background:var(--primary);color:white;border:1px solid rgba(15,23,42,.16);
 }
-.btn.secondary{background:#F1F3F5;color:var(--text);border:1px solid #E0E0E0}
+.btn.secondary{background:var(--card);color:var(--text)}
 .btn.ghost{background:transparent}
-.btn.small{height:36px;border-radius:8px;font-size:12px;padding:0 12px}
+.btn.small{height:34px;border-radius:12px;font-size:12px;padding:0 10px}
 .btn:active{transform:translateY(1px)}
 
 .card{
@@ -230,7 +215,7 @@ button,input,select,textarea{font-family:inherit}
 .panel{
   padding:14px 14px 16px 14px;
 }
-.panel h3{margin:0;font-size:18px;font-weight:500;letter-spacing:-0.002em}
+.panel h3{margin:0;font-size:13px;letter-spacing:-.01em}
 .panel .sub{margin-top:4px;font-size:12px;color:var(--muted)}
 
 .table{
@@ -296,111 +281,6 @@ button,input,select,textarea{font-family:inherit}
 .event .t{font-weight:1000;font-size:12px}
 .event .d{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.35}
 hr.sep{border:none;border-top:1px solid rgba(15,23,42,.08);margin:12px 0}
-
-/* ================================
-   Brandbook UI overrides (2026-02)
-   ================================ */
-body{font-size:14px;line-height:1.5}
-h1{font-size:24px;font-weight:600;letter-spacing:-0.005em;margin:0}
-h2{font-size:20px;font-weight:500;margin:0}
-h3{font-size:18px;font-weight:500;margin:0}
-.small{font-size:12px;color:var(--muted)}
-.meta,.desc,.muted{color:var(--muted)}
-.muted2{color:var(--muted2)}
-
-/* Surfaces */
-.card,.sidecard,.panel,.kpi,.kanbanCol,.modalBox,.toast{
-  border-radius:var(--radius);
-  border:1px solid var(--border);
-  box-shadow:var(--shadow);
-  background:var(--card);
-}
-.sep,.navsep{background:var(--border)}
-
-/* Buttons */
-.btn{
-  height:40px;
-  border-radius:var(--radius2);
-  font-size:14px;
-  font-weight:600;
-  letter-spacing:.04em;
-  text-transform:uppercase;
-  background:var(--primary) !important;
-  border:1px solid rgba(0,87,255,.22) !important;
-}
-.btn.secondary{
-  height:36px;
-  background:#F1F3F5 !important;
-  color:var(--text) !important;
-  border:1px solid var(--border) !important;
-  text-transform:none;
-  letter-spacing:0;
-  font-weight:500;
-}
-.btn.danger{
-  background:var(--bad) !important;
-  border-color:rgba(239,83,80,.35) !important;
-}
-.btn:disabled{opacity:.55;cursor:not-allowed}
-.btn:focus{box-shadow:var(--focus)!important}
-.btn.ghost{
-  background:transparent !important;
-  color:var(--text) !important;
-  border:1px solid var(--border) !important;
-  text-transform:none;
-  letter-spacing:0;
-}
-
-/* Inputs */
-.input,.select,textarea{
-  height:40px;
-  border-radius:10px;
-  border:1px solid #D0D0D0 !important;
-  background:#fff !important;
-  font-size:14px;
-}
-.input::placeholder{color:#A0A0A0}
-.input:focus,.select:focus,textarea:focus{box-shadow:var(--focus)!important;border-color:var(--primary)!important;outline:none}
-
-/* Badges / chips */
-.badge{
-  border-radius:999px;
-  font-weight:500;
-  border:1px solid var(--border);
-}
-.badge.fill{background:rgba(0,87,255,.12);border-color:rgba(0,87,255,.18);color:var(--primary)}
-.badge.good{background:rgba(46,190,94,.12);border-color:rgba(46,190,94,.20);color:var(--good)}
-.badge.bad{background:rgba(239,83,80,.12);border-color:rgba(239,83,80,.20);color:var(--bad)}
-
-/* Tables */
-.table{
-  border-radius:12px !important;
-  border:1px solid var(--border) !important;
-  overflow:hidden;
-}
-.table th{
-  font-size:12px;
-  font-weight:600;
-  color:var(--muted);
-  text-transform:uppercase;
-  letter-spacing:.04em;
-}
-.table tr{min-height:48px}
-.table tbody tr:nth-child(even){background:#FAFAFA}
-
-/* Hover/active states for clickable items */
-.navbtn:hover,.card:hover,.rowbtn:hover{filter:brightness(0.99)}
-.navbtn:active,.card:active,.rowbtn:active{transform:translateY(1px)}
-
-
-/* --- Design system patch (Reshenie) --- */
-.table thead th{font-size:12px;color:var(--muted);font-weight:600;}
-.table tbody tr{min-height:48px;}
-.table-striped>tbody>tr:nth-of-type(odd)>*{--bs-table-bg-type:#FAFAFA;}
-.form-control,.form-select{height:40px;font-size:14px;border-color:#D0D0D0;}
-.form-control:focus,.form-select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,87,255,0.25);}
-.btn-primary{--bs-btn-bg:var(--primary);--bs-btn-border-color:var(--primary);--bs-btn-hover-bg:#004CE0;--bs-btn-hover-border-color:#004CE0;}
-
 </style>
 </head>
 
@@ -1102,7 +982,7 @@ let settings = load(LS.settings, {
   media:{platforms:["РБК","Коммерсант"], schedule:"1", keywords:"ИТ‑инвентаризация | discovery | asset management\nтендер | закупка | конкурс", dropTo:"new"},
   tender:{platform:"ЕИС (zakupki.gov.ru)", token:"", schedule:"2", keywords:"ITAM | инвентаризация | учет активов\nCMDB | конфигурационная база", score:"0.75"},
   ai:{enabled:true, key:"", sync:"60", prob:"Комбо: правила + ИИ‑оценка", officialOnly:false, noContacts:false},
-  kp:{currency:"RUB", vat:"22", rules:"Партнерская скидка: по согласованию\nСкидка руководителя: только директор", auto:"Стандарт"}
+  kp:{currency:"RUB", vat:"20", rules:"Партнерская скидка: по согласованию\nСкидка руководителя: только директор", auto:"Стандарт"}
 });
 let uiState = load(LS.ui, {role:"manager", officialOnly:false, noContacts:false, syncMin:60, timelineOn:true, relmapOn:true, aiOn:true});
 
@@ -1922,8 +1802,5 @@ function toast(text){
   };
 })();
 </script>
-
-<script src="vendor/bootstrap/bootstrap.bundle.min.js"></script>
-
 </body>
 </html>
